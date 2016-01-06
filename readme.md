@@ -6,7 +6,7 @@ Tmetrics besteht aus folgenden Teilen:
 
 Zu den bereitgestellten Analysen gehören Sentimentanalyse, Clustering und die Identifizierung von Peaks und dazugehörigen Nachrichten. Die vollständige Dokumentation befindet sich in der Datei `Abschlussbericht/Tmetrics.pdf`.
 
-Tmetrics entstand im Wintersemester 2013/14 am Institut für Informatik der Westfälischen Wilhelms-Universität Münster im Rahmen des Projektseminars *Data Mining* und wurde unten Bedingungen der GNU General Public License Version 3 veröffentlicht. Der volle Lizenztext findet sich in der Datei `license/gpl.txt`.
+Tmetrics wurde im Wintersemester 2013/14 am Institut für Informatik der Westfälischen Wilhelms-Universität Münster von zehn Studenten des im Rahmen des Projektseminars *Data Mining* entwickelt und unter den Bedingungen der GNU General Public License Version 3 veröffentlicht. Der volle Lizenztext findet sich in der Datei `license/gpl.txt`.
 
 ```
 Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
