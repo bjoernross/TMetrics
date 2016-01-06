@@ -1,0 +1,47 @@
+\begin{center}
+\scalebox{0.8}{
+\begin{tikzpicture}[scale=.6,database/.style={
+      cylinder,
+      cylinder uses custom fill,
+      cylinder body fill=lblue,
+      cylinder end fill=lblue,
+      shape border rotate=90,
+      aspect=0.25,
+      align=center,
+      draw
+    }]
+\definecolor{silver}{RGB}{158,158,169}
+\definecolor{midgray}{rgb}{.35,.35,.35}
+\definecolor{lightsilver}{RGB}{221,221,232}
+\definecolor{lblue}{RGB}{210,220,250}
+\definecolor{mblue}{RGB}{165,190,225}
+\definecolor{dblue}{RGB}{0,70,117}
+\definecolor{lgreen}{RGB}{200,245,185}
+\definecolor{mgreen}{RGB}{190,225,165}
+\definecolor{mred}{RGB}{225,190,165}
+\definecolor{dgreen}{RGB}{40,135,40}
+\definecolor{dred}{RGB}{135,40,40}
+    
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne1) at (6, 0) {Google News};3
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne2) at (11.5, 0) {Bing Web};
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne3) at (17, 0) {Bing News};
+
+\visible<2->{
+\draw [decorate,thick,decoration={brace,amplitude=10pt,mirror,raise=4pt}]
+(4,-1) -- (19,-1);
+\node[single arrow, draw, fill=lightsilver, align=center, shape border rotate=270, minimum height=3cm,font=\small](parse) at (11.5, -4) {\ \\ collect and\\ parse RSS};
+}
+
+\visible<3->{
+\node[database, minimum width=2cm, minimum height=1.5cm, font=\small] (db) at (0,0) {MySQL \\ DB};
+\node[single arrow, draw, fill=lightsilver, align=center, shape border rotate=270, minimum height=3cm,font=\small](parse) at (0, -4.2) {\ \\ collect\\ tweets};
+}
+
+\visible<4->{
+\node[fill=lblue,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 10cm] (ne3) at (5.75, -9) {compare news and tweets to find relevant news};
+\node[single arrow, draw, fill=mred, align=center, shape border rotate=0,font=\small, minimum height=2.6cm, minimum width=1.3cm](parse) at (17,-9) {top news};
+}
+
+\end{tikzpicture}
+}
+\end{center}

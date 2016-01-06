@@ -1,0 +1,212 @@
+gliederung
+namen
+ideenfindung prozess
+idee
+
+6
+5
+deamon 6:30
+30-45
+Cluster 5:30
+30-45
+Senti Analyse 6:30
+30-45
+News 4
+
+
+ausblick
+scrum
+danke
+uebersichtsfolie (Datenanalyse auf Twitterbeitraegen mit Clustering, Sentimentanalyzse )
+
+
+---
+
+
+Ich glaube die Verteilung ist recht ausgeglichen. Der groessere O-Teil liegt momentan einfach daran, dass ich den staerker ausformuliert habe, was ich bei A ja noch gar nicht ueberall machen konnte.
+
+
+---
+
+
+
+(O)
+- Herzlich willkommen zu der Praesentation unseres Projektseminars
+[- Es ist schoen zu sehen, dass das Interesse an unserem Ergebnis auch ueber den betreuenden Lehrstuhl hinaus vorhanden ist]
+- Wie sie auch auf der Titelfolie sehen koennen: Projekt, Datamining, Twitter
+- Bei der Praesentation werden wir ihnen zunaechst das Projekt vorstellen, und dann nach einigen Fachvortraegen zu Einzelmodulen das ganze mit einer offenen Praesentation beenden
+- Doch bevor in Projekt einsteigen, kurz die Beteiligten vorstellen
+
+- In lexikographischer Ordnung des Nachnamens waeren das
+- Daniel Günther
+- Wladimir Haffner
+(A) 
+- Olaf Markus Köhler
+- Sebastian Lichtenfels
+- Erwin Quiring
+(O)
+- Andreas Riddering
+- Björn Roß 
+- Jens Sandmann 
+- Torsten Scholz
+- Tobias Wenzel
+- Das Projektseminar ist durch unsere Initative entstanden
+- und Herr Prof. Vahrenhold bereiterklaert uns zusammen mit Herrn Paul zu betreuen
+
+- Im Rahmen dieser studentischen Initiative stand zunaechst nur die Begriffe Datamining und Twitter im Raum (Buzzwords ganztoll)
+- erste Aufgabe: eine gemeinsame Projektidee zu entwerfen.
+
+(A)
+Da lediglich grobes Thema und nicht die genaue Aufgabe vorgegeben war: Erste Aufgabe: Ideenfindung
+
+- dazu 2er Teams gebildet, in denen insgesamt 5 Ideen ausgearbeitet
+- anschliessend ueber Voting-Verfahren 2 Favoriten
+-> next Folie
+
+Favorit1: KinoModul, Sentiment
+Favorit2: Clustering
+
+Endergebniss: Kombination aus 2en
+... mehr Details zum ausgewählten Projekt:
+- Heat Maps über Landkarte
+- Kinomodul (und einfache Möglichkeit für weitere Module)
+- Prognose Möglichkeiten
+
+Nachdem Projektidee fertig: Technologienentscheidung -> next Folie
+
+
+- Java stand aufgrund allgemeiner Kenntnis schnell fuers Backend fest, erste Prüfung: geht das mit Server (also kriegen wir das hin?) ansonsten PHP als Fallback
+- Bibliotheken: Twitter 4 J, Bootstrap und jQuery, Highcharts, 
+- Viele Stellen, an denen weitere Entscheidungen getroffen werden mussten (Datenbank Aufbau, REST, wie Anfragen unterteilen etc)
+- Tomcat, Apache für statischen Content (Konfigurierbarkeit)
+
+Dazu genauer jetzt anhand der Architektur
+
+(O)
+- Grundlegende Idee: Daten von Twitter sammeln, analysieren und praesentieren
+- Systemgrenzen
+
+- Die TwitterAPI ist sehr restriktiv beim Herausgeben von Informationen (starke Mengen/Zeit Beschraenkung)
+- Daher Tweets Speichern in eigener DB
+- Dazu dauerhaft laufender Deamon, der Daten von Twitter sammelt
+- Darueberhinaus soll ein Webservice die Daten Analysieren und fuer die Ausgabe vorbereiten
+- Fuer beide Komponenten Java
+
+- Als Wrapper fuer die TwitterAPI fuer Twitter4J entschieden
+- JDBC fuer die Anbindung an die MySQL Datenbank
+- Webservice als RESTful Service umsetzen und auf Tomcat laufen lassen
+
+- Daten werden nicht direkt von Restservice ausgeliefert, sondern ueber einen Apache
+
+- Dieser liefert auch das Frontend aus, reicht die Requests und JSONS durch
+
+- Eine weitere Verbindung die hier der Vollstaendigkeit halber herzustellen ist, besteht zwischen unserem Deamon und dem Webservice
+- Mit dem System wollen wir ja die Meinung von Tweets analysieren
+- dazu soll der Deamon im Hintergrund das Bewertungsmodell vorbereiten
+- Die konkrete Bewertung einzelner Tweets und deren Ursache wollen wir aber auch live fuer Tweets berechnen und anzeigen koennen, daher auch zugaenglich im Webservice
+
+- Eine weitere externe Datenquelle die wir benutzen sind die Suchmaschinen Bing und Google, um News zu suchen.
+- Der Hintergrund dazu ist, dass man im Verlauf zu bestimmten Zeitpunkten Haeufungen von Tweets feststellen kann, und unser System dann automatisiert eine moegliche Begruendung dafuer liefern soll
+- Dafuer besteht diese zusaetzliche Anbindung
+
+- Bevor wir auf weitere technische / algorithmische Details eingehen
+- Und damit Sie schonmal einen Ueberblick ueber das Ergebnis bekommen koennen
+- Jetzt darf ich zurueckgeben an Adreas fuer einen kurzen Ueberblick ueber unser Endprodukt
+
+(Screenshots durch A)
+(noch genauer ausarbeiten) - Screenshot Blabla
+zu den Shots:
+Verfügbarkeit, Fähigkeiten, Fehlerquelle ausgelagert
+Aufwand für grafische Aufbereitung minimiert / ausgelagert, Browser spezifische Problematiken durch Frameworks abgefangen
+immer vielfältiger, teils bereits in Grafikkarten gerendered, auch auf modernen Handys verfügbar
+
+
+
+(O)
+///////////////- Nach diesem kleinen Rundflug, jetzt bitte wieder Aufmerksamkeit
+- weitere Vorfuehrung und Zeit fuer Fragen am Ende
+- Jetzt erklaeren woher die daten kommen
+
+(Torsten - Deamon)
+
+(A)
+- Vielen Dank Torsten
+- Nachdem nun klar ist, woher die Daten kommen, und wie sie gespeichert werden
+- Nun Auswertung
+- Beginnen mit Clustern, was ihnen von Vladimir vorgestellt wird
+
+(Vladimir - Clustervortrag)
+
+(O)
+- Danke Vladimir fuer die Praesentation der Clusteringverfahren
+- Was sie gerade gesehen haben ist im Sinne von Machine Learning als unueberwachtes Lernen einzustufen
+- Mit anderen Worten, ist es nicht noetig dem Algorithmus eine Beispielmenge an zusammengehoerigen und nicht zusammengehoerigen Elementen mitzugeben
+- Der Algorithmus arbeitet alleine auf den vorhandenen Daten, und versucht daraus Gemeinsamkeiten abzuleiten
+- Beim Ueberwachten Lernen hingegen gibt der Mensch von aussen vor, was richtige und falsche Interpretationen der Daten sind
+- Daraus versucht das System dann einen moeglichst optimales Verfahren anzunaehern, um die Eingaben entsprechend der menschlichen Vorgaben zu interpretieren
+- Das sehen wir im Folgenden bei der Sentiment- sprich Meinungsanalyse
+- Wie und wofuer das in unserem Projekt umgesetzt wurde, dass erklaert ihnen jetzt Bjoern
+
+(Bjoern - Sentimentvortrag)
+
+(A)
+- Vielen Dank Bjoern fuer den Einblick in die Welt der emotionalen Informatik
+- Ein weiteres Modul, dass wir kurz Vorstellen wollen ist das News-Modul
+- Dazu wird Olaf Ihnen jetzt etwas erzaehlen
+
+(O - News&PeaksVortrag)
+- Die erste Frage, die an dieser Stelle zu klaeren ist: Wie werden News fuer einen bestimmten Suchbegriff zu einem bestimmten Zeitpunkt gesucht?
+
+- Anfragen zu den Daten und Suchbegriffen an die externen Datenquellen
+- derartige Anfragen, dass Format RSS (was bei den angegeben Anbietern per url-parameter moeglich), leicht zu parsen
+
+- News nur Tagesgenau
+- Tweets sind Stundengenau
+- daher parallel, Tweets zu dem konkreten Datum, Suchbegriff
+
+- unter den News diejenigen raussuchen die am aehnlichsten zu den Tweets
+- Aehnlichkeit ueber Vergleich der Wortlisten
+- So erhalten wir die News, die dann im Frontend ausgegeben werden
+
+- Die zweite zu klaerende Frage: Fuer welche Zeitpunkte werden automatisch news gesucht
+- Ausgangsdaten: Tweetanzahlen ueber die Zeit (je Stunde) zu bestimmten Thema
+- Ziel: Interessante Stellen ermitteln und News per Tooltip direkt zur Verfuegung stellen
+- Dazu der Algorithmus, der automatisch Peaks identifiziert
+- Viele Methoden moeglich, konkret gewaehlte hier vorgestellt:
+
+- Vereinfachung auf taegliches Maximum um Tagesschwankungen rauszunehmen
+
+- Betrachtung der 20% groessten Werte, als Mindestanforderung fuer den Status Peak
+
+- Maxima der zusammenhaengenden Tage, die ueber der 80% Huerde liegen
+- Damit Mehrfacheidentifikation der gleichen Aktualistaetswelle wegen Tagesschwankungen verhindern
+
+- Uebertragen auf die Tweets/Hour Kurve, Peaks Identifiziert
+
+- Geklaert wie News abgefragt und Peaks identifiziert werden, was den Vortragsteil zu den Auswertungsmodulen abschliesst
+- Damit moechte ich jetzt wieder an Andreas abgeben, der im Folgenden einen Ausblick gibt auf das weitere Potential des Projekts
+
+(A)
+- Ausblick, was wir noch gerne gemacht haetten
+- News zu peaks persistent speichern
+(noch genauer ausarbeiten) - ... Kino, Zukunftprognose, Heatmaps
+- Diese Sachen nicht gemacht weil KundenPriorisierung
+- Scrum-aehnliches Konzept
+- Mehrere Iterationen, je ein paar Wochen lang
+- Zu beginn Augabenpakete, und Aufwandsschaetzung durch Planningpoker
+- Priorisierung durch Projektleiter (Paul) in Absprache mit Kunde (Vahrenhold)
+- wechselnde scrummaster
+- 2/woche, Daily Scrum
+- wochentliche Treffen mit Projektleiter
+- wochentliche Treffen mit Kunde
+- dieser Prozess hat es ermoeglicht sehr strukturiert konstant Fortschritte zu machen
+
+Insgesamt: Selbstorganisiertes Team, von Projektidee Findung bis Realisierung
+
+(O)
+- Und damit schreitet unser Vortrag auch dem Ende entgegen 
+- Daher ganz herzlich danken
+Pause
+- und moechten ihnen jetzt gerne die Moeglichkeit geben Fragen zu stellen
+- falls diese algorithmischer oder technischer Natur sind, koennen sie diese gerne jetzt direkt stellen
+- sonst wuerden wir, jetzt mit einer offenen LiveDemonstration machen, waherend der sie gerne auch Fragen stellen koennen

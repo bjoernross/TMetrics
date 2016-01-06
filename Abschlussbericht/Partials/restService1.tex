@@ -1,0 +1,21 @@
+\subsection{Einführung}
+\label{resteinfuehrung}
+Das Wort REST ist eine Abkürzung für \textit{Representational State Transfer} und bezeichnet ein Programmierparadigma speziell für Webanwendungen. Vorgeschlagen wurde es von Roy Fielding in seiner Dissertation aus dem Jahr 2000 \cite{fielding}. In einem Satz lässt sich das Paradigma wie folgt zusammenfassen: REST sieht vor, dass bei einer Anfrage an eine URL immer die gleichen Ressourcen vom Server zurückgeliefert werden. Das Programmierparadigma lässt sich am einfachsten anhand seiner Eigenschaften beschreiben.
+
+\subsubsection{Client-Server}
+Die Kommunikation zwischen dem Server und dem Webbrowser oder Client findet nicht direkt statt, sondern ist durch ein Interface getrennt. Dies bedeutet, dass die beiden Komponenten keinerlei Informationen über den Zustand des anderen benötigen und sich nicht um Implementierungsdetails der anderen Komponente kümmern müssen. Dies ermöglicht eine einfache Portierung der Client-Software über verschiedene Plattformen hinweg. Die Skalierbarkeit des Servers wird ebenfalls verbessert, da seine Komponenten vereinfacht werden können. Der größte Vorteil dieser Eigenschaft ist allerdings die Möglichkeit, Server und Client getrennt voneinander zu entwickeln, sofern vorher eine Schnittstelle definiert wurde.
+
+\subsubsection{Zustandslosigkeit}
+Eine zusätzliche Einschränkung, die zu der Client-Server Kommunikation hinzugefügt wird, ist die Bedingung, dass die Kommunikation zustandslos sein muss. Dies bedingt, dass alle relevanten Informationen für eine Anfrage an den Server in dieser enthalten sein müssen und die Session auf der Clientseite abgehandelt werden muss. Diese Bedingung verbessert ebenfalls die Skalierbarkeit, da zwischen den einzelnen Anfragen keine zusätzlichen Informationen gespeichert werden müssen. Weiterhin wird die Robustheit des Systems gestärkt, da ein Fehler innerhalb einer Anfragebearbeitung keine weiteren Anfragen beeinflusst.
+
+\subsubsection{Cache}
+Um die Ressourcen des Netzwerks optimal zu nutzen wird vorausgesetzt, dass Anfragen an den Server explizit als \textit{cacheable} markiert werden müssen. 
+
+\subsubsection{Einheitliches Interface}
+Die Interfaces, die die Kommunikation zwischen verschiedenen Komponenten des Programms abwickeln, müssen einheitlich sein. Hierdurch wird die allgemeine Systemarchitektur vereinfacht und die Kommunikation bleibt einheitlich.
+
+\subsubsection{Schichten}
+Die Struktur des Programms sollte in Schichten unterteilt sein, wobei keine Schicht mit einer anderen interagiert, die nicht ihre direkte Nachbarschicht ist. So ist es möglich, bestimmte Funktionen in einer Schicht zu gruppieren und dadurch die Komplexität des Programms weiter zu reduzieren.
+
+Da unser Endprodukt eine Webanwendung für verschiedene Plattformen sein soll, erschien dem Team dieses Programmierparadigma als sinnvoller Ansatz für unsere Server-Architektur.
+

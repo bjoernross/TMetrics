@@ -1,0 +1,104 @@
+\documentclass{beamer}
+
+\usepackage[pantone312, fast]{wwustyle}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{colortbl}
+\usepackage{verbatim}
+\usepackage{epstopdf}
+\lstset{basicstyle=\footnotesize} 
+
+\definecolor{SentiDarkGreen}{RGB}{24,109,29}
+\definecolor{SentiGreen}{RGB}{4,165,12}
+\definecolor{SentiDarkRed}{RGB}{169,6,6}
+\definecolor{SentiLightRed}{RGB}{204,116,116}
+
+% \usetheme{Warsaw}
+% \usetikzlibrary{external}
+% werden benoetigt um manche Grafiken zu erstellen
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{decorations.pathreplacing}
+%\tikzexternalize
+
+
+\title{TMetrics\\}
+\subtitle{Data-Mining mit Twitter - ein Projektseminar\\}
+%\author{tmetrics-Team}
+\date{\today}
+
+% \setbeamercovered{transparent}
+
+
+\begin{document}
+% \wwupreparefastmode
+  \begin{frame}[plain]
+    \titlepage
+  \end{frame}
+  \begin{frame}
+   \frametitle{Gliederung}
+   \tableofcontents
+  \end{frame}
+\AtBeginSection[] 
+{
+\begin{frame}
+\frametitle{Gliederung}
+\tableofcontents[currentsection,subsubsectionstyle=show/shaded,]
+\end{frame}
+}
+
+\AtBeginSubsection[] 
+{
+\begin{frame}
+\frametitle{Gliederung}
+\tableofcontents[
+    currentsection,
+    currentsubsection,
+    subsubsectionstyle=show/shaded, 
+    ]
+% \tableofcontents[currentsection,currentsubsection]
+\end{frame}
+}
+
+\AtBeginSubsubsection[] 
+{
+\begin{frame}
+\frametitle{Gliederung}
+\tableofcontents[currentsection,currentsubsection, subsubsectionstyle=show/shaded,]
+\end{frame}
+}
+\section{Projektvorstellung}
+  \input{../chapter/01_Einleitung.tex}
+\section{Überblick des Aufbaus}
+  \input{../chapter/02_Aufbau.tex}
+
+\section{Die einzelnen Module}
+\subsection{Daemon}
+  \input{../chapter/03_Daemon.tex}
+  \subsection{Clustering}
+  \input{../chapter/05_Clustering.tex}
+\subsection{Sentiment-Analyse}
+  \input{../chapter/04_Sentiment.tex}
+\subsection{News-Modul}
+  \input{../chapter/06_News.tex}
+\section{Ausblick und Organisation}
+  \input{../chapter/07_Scrum.tex}
+  \input{../chapter/09_Danke.tex}
+\section{Demonstration}
+%   \input{../chapter/Daemon_Anhang.tex}
+  
+%   \input{../chapter/bib.tex}
+\end{document}
+
+
+

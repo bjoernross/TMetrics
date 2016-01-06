@@ -1,0 +1,39 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, shapes}
+\usetikzlibrary{chains}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{decorations,arrows}
+\usetikzlibrary{decorations.pathmorphing}
+\usepgflibrary{decorations.pathreplacing} 
+
+\begin{document}
+
+\begin{tikzpicture}[node distance=0cm, font=\sffamily]
+
+% Manually size the picture
+\draw[opacity=0] (0, 0) -- (0, 1.7);
+
+% Start bar
+\node[scale=0.5] at (3, 1.2) {Start};
+\draw (3, 0.9) -- (3, 1.1);
+
+% Search orientation
+\node[scale=0.5] at (2, 1.2) {Suchrichtung};
+\draw[<-, dotted] (0.5, 1) -- (3, 1);
+
+% End bar
+\node[scale=0.5] at (0.5, 1.2) {Ende};
+\draw (0.5, 0.9) -- (0.5, 1.1);
+
+% Time axis
+\node[scale=0.5] at (3, 0.2) {Zeit};
+\draw[->] (0, 0) -- (6, 0);
+
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,66 @@
+% \begin{frame}{Module - Clustering - Grundidee}
+% %Grundidee:
+% \begin{itemize}
+%  \item Tweets visuell als Punkte darstellen,
+%  \item Tweets nach Themen gruppieren,
+% % 	damit man einen Eindruck bekommt 
+% %        welche unterschiedliche ``Meinungen'' es zu einem Begriff gibt oder welche 
+% %        Hashtags zusammen verwendet werden,
+%  \item die Distanzen zeigen die Unterschiede.
+% %  zwischen den dargestellten Punkten sollen suggerieren, wie 
+% %        ähnlich bzw. unterschiedlich sich die betroffenen Tweets sind (zumindest grob).
+% \end{itemize}
+% \end{frame}
+
+
+\begin{frame}{Module - Clustering - Grundidee}
+%Beispiel:\\
+\input{../img/ClusteringIdee.tikz}
+\end{frame}
+
+
+\begin{frame}{Module - Clustering - Umsetzungsidee}
+%Umsetzungsidee:
+\begin{itemize}
+ \item Features für Tweets/Hashtags berechnen.
+%  \item Hashtags aus allen Tweets zu einem Begriff als binäre Attribute der Tweets benutzen,
+%  um Ähnlichkeiten zwischen den Tweets zu berechnen:
+%  \begin{center}
+% \begin{tabular}{r||c|c|c|c}
+%          & hashtag1 & hashtag2 & $\cdots$ & hashtagN \\ \hline
+% tweet1   & 1        & 0        & $\cdots$ & 1        \\ \hline
+% tweet2   & 1        & 1        & $\cdots$ & 0        \\ \hline
+% $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$ & $\vdots$ \\ \hline
+% tweetM   & 1        & 0        & $\cdots$ & 1     
+%  \end{tabular}
+%  \end{center} 
+\item Ähnlichkeiten zwischen allen Tweet/Hashtag-Paaren berechnen.
+% Beispielähnlichkeit (Russel Rao): $$s_{ij} = \dfrac{\#\text{Spalte mit gemeinsamen Einsen}}{\#\text{Spalten}}.$$
+\item Tweets clustern, um festzulegen welche Tweets zusammengehören.
+\item Tweets in der xy-Ebene Positionen zuordnen.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Module - Clustering - Umsetzungsidee}
+Ergebnis: 
+
+\input{../img/ClusteringNachAllenHashtags.tikz}
+\end{frame}
+
+
+\begin{frame}{Module - Clustering - Alternative Umsetzungen}
+%Alternative Umsetzungen:
+\begin{itemize}
+    \item Statt Hashtags alle vorkommenden Wörter in den Tweets verwenden. 
+\end{itemize}
+ \input{../img/ClusteringNachAllenWoertern.tikz} 
+\end{frame}
+
+
+\begin{frame}{Module - Clustering - Alternative Umsetzungen}
+\begin{itemize}
+    \item Statt Tweets Hashtags clustern und visuell darstellen.
+\end{itemize}
+\input{../img/ClusteringNachHashtags.tikz} 
+\end{frame}

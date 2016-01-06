@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+    	<title>trend metrics</title>
+	
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="description" content="Trend Metrics Twitter Data Analysis">
+	    <meta content="width=device-width, initial-scale=0.9, maximum-scale=1, user-scalable=no" name="viewport">
+	    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+	    <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+	
+	    <!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+		<link href="//fonts.googleapis.com/css?family=Archivo+Narrow:700" rel="stylesheet" type="text/css">
+		<link href="css/screen.css" rel="stylesheet" media="screen">
+
+	</head>
+  
+  	<body>
+
+		<div id="tmNav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      		<div class="container">
+        		<div class="navbar-header">
+          			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			            <span class="sr-only">Toggle navigation</span>
+			            <span class="icon-bar"></span>
+			            <span class="icon-bar"></span>
+			            <span class="icon-bar"></span>
+          			</button>
+          			<a class="navbar-brand toStartView" href="">trend metrics</a>
+        		</div>
+        		<div class="collapse navbar-collapse">
+          			<ul class="nav navbar-nav">
+          			<li class="active"><a href="">Trend Analysis</a></li>
+          				<li id="langSettingsLink"><a data-toggle="collapse" data-target="#langSettingsOuter"><span class="glyphicon glyphicon-filter"></span> Language Filter <span class="caret"></span></a>
+							<div id="langSettingsOuter" class="collapse">
+								<div id="langSettingsInner" class="container">
+								<div id="showtweetstext">Analyse tweets for:</div> 
+									<ul class="nav navbar-nav">
+										<li class="active"><a class="langLink" title="">All languages</a></li>
+										<li><a class="langLink" title="en">English</a></li>
+										<li><a class="langLink" title="de">German</a></li>
+										<li><a class="langLink" title="und">Other</a></li>
+									</ul>
+								</div>
+							</div>
+						</li>
+			            <li id="viewSettingsLink"><a><span class="glyphicon glyphicon-wrench"></span> View Settings</a></li>
+			            <li><a href="./daemon.html" class="openInOverlay"><span class="glyphicon glyphicon-stats"></span> Status</a></li>
+			            <li><a href="./contact.html" class="openInOverlay"><span class="glyphicon glyphicon-user"></span> Contact</a></li>
+          			</ul>
+        		</div>
+      		</div>
+    	</div>
+
+    	<div id="mainContainer" class="container">
+		    <div id="tmStartbox" class="clearfix">
+				<div class="page-header">
+					<h1 class="toStartView">Trend Metrics</h1>
+				</div>
+				<div class="input-group search-bar col-xs-12 col-sm-8 col-sm-offset-2">
+					<input type="text" id="searchBox" class="form-control typeahead" placeholder="Analyze topic...">
+					<span class="input-group-btn" id="languageDropdownWrapper">
+						<button class="btn btn-default" type="button" id="searchButton"><span class="glyphicon glyphicon-search"></span></button>
+					</span>
+				</div>
+		    </div>
+		    
+		    <div id="alertContainer"></div>
+		    
+		    <div id="contentContainer">
+		    
+                <ul class="nav nav-tabs searchItemsTabs" id="searchItemsTabBar">
+                    <li><a id="tabHeadCompare" data-target="#tabBodyCompare" data-toggle="tab"><span class="searchItemTitle">Comparison</span></a></li>
+                </ul>
+                
+                <div class="tab-content" id="searchItemsContainers">
+                	<div id="tabBodyCompare" class="analysisWrap tab-pane fade active in">
+                		<div id="tweetsPerHourCompare" class="panel panel-primary viewPanel">
+							<div class="panel-heading">
+								Comparison of Tweets per Hour
+							</div>
+							<div class="panel-body viewBody hidden">
+								 
+							</div>
+							<div class='viewLoading'>Loading...</div>
+						</div>
+                		<div id="sentimentAnalysisCompare" class="panel panel-primary viewPanel">
+							<div class="panel-heading">
+								Comparison of Sentiments
+							</div>
+							<div class="panel-body viewBody hidden">
+								 
+							</div>
+							<div class='viewLoading'>Loading...</div>
+						</div>
+			  		</div>
+				</div>
+			
+			</div><!-- /.contentContainer -->
+			
+		</div><!-- /.container -->
+		
+		
+		<div id="modalNewSearch" class="modal fade" aria-hidden="true" aria-labelledby="modalNewSearch" role="dialog" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" aria-hidden="true" data-dismiss="modal" type="button">
+							<span class="glyphicon glyphicon-remove"></span>
+						</button>
+						<h4 class="modal-title">Start New Search</h4>
+					</div>
+					<div class="modal-body">
+						The search term <strong>Test term</strong> has not been found in our database.<br />
+						Are you sure you want to trigger a new search?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+						<button type="button" id="modalConfirmButton" class="btn btn-primary">Yes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="modalActiveViews" class="modal fade" aria-hidden="true" aria-labelledby="modalActiveViews" role="dialog" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" aria-hidden="true" data-dismiss="modal" type="button">
+							<span class="glyphicon glyphicon-remove"></span>
+						</button>
+						<h4 class="modal-title">Choose active views</h4>
+					</div>
+					<div class="modal-body">
+						<div id="activeViewsCheckboxes">
+							<input type="checkbox" /> 0
+							<input type="checkbox" /> 1
+							<input type="checkbox" /> 2
+							<input type="checkbox" /> 3
+							<input type="checkbox" /> 4
+							<input type="checkbox" /> 5
+							<input type="checkbox" /> 6
+							<input type="checkbox" /> 7
+						</div>
+						<div id="activeViewsCheckTiles">
+							<span id="sentimentAnalysisTile" class="selectionTile" data-shortdesc="<h4>Sentiment Analysis</h4> Absolute and relative amount of positive, negative and neutral tweets."><span><span class="glyphicon glyphicon-eye-close"></span>Sentiment Analysis</span></span>
+							<span id="tweetsPerHourTile" class="selectionTile" data-shortdesc="<h4>Tweets per Hour</h4> Absolute amount of tweets over time with additional news information for peaks."><span><span class="glyphicon glyphicon-eye-close"></span>Tweets per Hour</span></span>
+							<span id="sentimentPerHourTile" class="selectionTile" data-shortdesc="<h4>Sentiment per Hour</h4> Relative comparison between positive and negative tweets over time."><span><span class="glyphicon glyphicon-eye-close"></span>Sentiment per Hour</span></span>
+							<span id="relatedHashtagsTile" class="selectionTile" data-shortdesc="<h4>Related Hastags</h4> Absolute amount of most frequent hashtags."><span><span class="glyphicon glyphicon-eye-close"></span>Related Hashtags</span></span>
+							<span id="tagCloudTile" class="selectionTile" data-shortdesc="<h4>Tagcloud</h4> Most frequent words visualized in a cloud."><span><span class="glyphicon glyphicon-eye-close"></span>Tagcloud</span></span>
+							<span id="clusterAnalysisTile" class="selectionTile" data-shortdesc="<h4>Cluster Analysis</h4> Clusters of hashtags mapped to two-dimensional space."><span><span class="glyphicon glyphicon-eye-close"></span>Cluster Analysis Hashtags</span></span>
+							<span id="clusterAnalysisTweetsTile" class="selectionTile" data-shortdesc="<h4>Cluster Analysis</h4> Clusters of tweets mapped to two-dimensional space."><span><span class="glyphicon glyphicon-eye-close"></span>Cluster Analysis Tweets</span></span>
+							<span id="languageDistributionTile" class="selectionTile" data-shortdesc="<h4>Language Distribution</h4> Absolute and relative amount of tweets per language."><span><span class="glyphicon glyphicon-eye-close"></span>Language Distribution</span></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+					information needed? hover the tile!
+						<!-- <button type="button" id="activeViewsConfirmButton" class="btn btn-primary">Save</button>  -->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="modalTweet" class="modal fade" aria-hidden="true" aria-labelledby="modalTweet" role="dialog" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" aria-hidden="true" data-dismiss="modal" type="button">
+							<span class="glyphicon glyphicon-remove"></span>
+						</button>
+                           <h4 class="modal-title">Top tweets for <span id="modalTweetSearchItem"></span><br />
+                               <small id="modalTweetSubtitle"></small>
+                          	</h4>
+                       </div>
+					<ul class="nav nav-tabs">
+					  <li><a href="#tweetsTab" data-toggle="tab">Tweets</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tweetsTab">
+							<div id="modalTweetBody" class="modal-body"></div>
+							<div class="modal-footer">
+								Showing <span id="modalTweetCount"></span> tweets.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="modalInfoLoad" class="modal fade" aria-hidden="true" aria-labelledby="modalTweet" role="dialog" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" aria-hidden="true" data-dismiss="modal" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+                           <h4 class="modal-title">-platzhalter-</h4>
+                       </div>
+					<div id="modelInfoBody" class="modal-body">
+					</div>
+					<div class="modal-footer">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+
+	    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>
+	    <script src="js/lib/bootstrap.js" type="text/javascript"></script>
+		<script src="js/lib/highcharts.js" type="text/javascript"></script>
+		<script src="js/lib/typeahead.min.js" type="text/javascript"></script>
+		<script src="js/lib/d3.js" type="text/javascript"></script>
+		<script src="js/lib/d3.layout.cloud.js" type="text/javascript"></script>
+		<script src="js/tmetrics.js" type="text/javascript"></script>
+		<script src="js/pool.js" type="text/javascript"></script>
+		<script src="js/views.js" type="text/javascript"></script>
+		<script src="js/lang.js" type="text/javascript"></script>
+		<script src="js/tabs.js" type="text/javascript"></script>
+		<script src="js/search_session.js" type="text/javascript"></script>
+		<script src="js/events.js" type="text/javascript"></script>
+		<script src="js/tweets.js" type="text/javascript"></script>
+		<script src="js/compare.js" type="text/javascript"></script>
+		<script src="js/views/sentiment_analysis.js" type="text/javascript"></script>
+		<script src="js/views/language_distribution.js" type="text/javascript"></script>
+		<script src="js/views/tweets_per_hour.js" type="text/javascript"></script>
+		<script src="js/views/sentiment_per_hour.js" type="text/javascript"></script>
+		<script src="js/views/related_hashtags.js" type="text/javascript"></script>
+		<script src="js/views/tag_cloud.js" type="text/javascript"></script>
+		<script src="js/views/cluster_analysis.js" type="text/javascript"></script>
+		<script src="js/views/cluster_analysis_tweets.js" type="text/javascript"></script>
+  	</body>
+</html>

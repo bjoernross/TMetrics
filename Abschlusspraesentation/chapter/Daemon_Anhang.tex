@@ -1,0 +1,23 @@
+\begin{frame}{Suchbegriffsplitting}
+	\begin{itemize}
+		\item Teilweise riesige Anzahl von Tweets in kurzer Zeit % (Terroranschlag, Tod einer bekannten Person etc.)
+		\item Idee: Mehrere Profile suchen zu \emph{einem} Begriff parallel
+		\item Aber: Die Twitter-API bietet \emph{keine} Möglichkeit, Tweets Zeitgenau zu liefern. Man kann lediglich bis zu einem bestimmten Tweet suchen
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Speicherprobleme}
+	\begin{itemize}
+		\item Der Daemon hat großen Datenmengen(Tweets) im RAM
+		\item Daten nicht schnell genug in DB $\Rightarrow$ Speicher voll
+		\item Kein Speicher $\Rightarrow$ \texttt{OutOfMemoryError} und der Thread stirbt
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Multi-Threading}
+	\begin{itemize}
+		\item Größte Gefahren: Deadlocks, Inkonsistenzen etc.
+		\item Beispiel: Exception innerhalb eines Mutex $\Rightarrow$ Deadlock
+		\item Erst die Struktur entwickeln, dann Coden
+	\end{itemize}
+\end{frame}

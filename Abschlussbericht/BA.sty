@@ -1,0 +1,96 @@
+\usepackage[left=2.5cm,right=2.5cm,top=2cm,bottom=3cm,includeheadfoot]{geometry}
+\usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+%\usepackage{inputenc}
+\usepackage[T1]{fontenc}
+%Kopf- und Fuzeile
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{3\baselineskip}%Kopfzeile breiter fr 3 Zeilen
+%Mathematik Package
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{romannum}
+\usepackage{amsthm}
+
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{color}
+
+\usepackage[font=small,labelfont=it]{caption}
+
+%\usepackage[lofdepth,lotdepth]{subfig}
+\usepackage{float}
+
+%\usepackage{plates}
+\usepackage{chngcntr}
+
+% Define user colors using the RGB model
+\definecolor{hellgrau}{rgb}{0.95,0.95,0.95}
+\definecolor{dunkelgrau}{rgb}{0.8,0.8,0.8}
+\definecolor{wwugreen}{rgb}{0.6941, 0.7922, 0}
+
+\usepackage[onehalfspacing]{setspace}
+\usepackage{wallpaper}
+\usepackage{pdfpages}
+
+%\usepackage{natbib}
+\usepackage{bibgerm}
+
+\clubpenalty = 10000
+\widowpenalty = 10000 
+\displaywidowpenalty = 10000
+
+\usepackage[%	nonumberlist, 			% keine Seitenzahlen anzeigen
+%	xindy,					% mit dem keine Auflistung von Glossar bzw Abk.-verzeicnis
+	acronym,      			% ein Abkürzungsverzeichnis erstellen
+	toc,          			% Einträge im Inhalts
+	]{glossaries}
+\renewcommand*{\glspostdescription}{}	% Den Punkt am Ende jeder Beschreibung deaktivieren (???)
+\makeglossaries
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%\usepackage[normalem]{ulem}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{pdfpages} % PDF Einbinden
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{wasysym}
+\usepackage{fancybox}
+\usepackage{mdwlist}
+\usepackage{paralist}
+%\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{framed} % Rahmen um Formel und ähnliches
+%\usepackage{multind}
+%\makeindex{saetze}
+%\makeindex{def}
+\usepackage{makeidx}
+\makeindex %-gind
+%\fancyhead[L]{}
+\fancyhead[CO]{TMetrics: Datenanalyse auf Twitter}
+%\fancyhead[R]{}
+\fancyhead[CE]{\scshape\leftmark}
+\renewcommand{\headrulewidth}{0.5pt}
+\usepackage{marginnote}
+
+\fancyfoot[L]{TMetrics-Projektteam}
+%Fuzeile rechts bzw. auen
+\fancyfoot[R]{\thepage}
+\fancyfoot[C]{}
+%Linie unten
+\renewcommand{\footrulewidth}{0.5pt}
+
+\renewcommand*{\chapterformat}{%
+    \Huge
+    \chapappifchapterprefix{\ }{\thechapter\autodot}%
+    \enskip\raisebox{0cm}[0pt][0pt]{\rule{0.05cm}{3cm}}\enskip
+}

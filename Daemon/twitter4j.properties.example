@@ -1,0 +1,13 @@
+# go to https://dev.twitter.com/apps
+# create a Twitter developer account if you don't have one
+# create an application
+# request an access token
+# put your values here
+# copy this file to twitter4j.properties
+# DO NOT use the values below unless it's an emergency :)
+# as these are the values of the 'original' account made by tobias and daniel
+# they should only be used by the daemon
+oauth.consumerKey=a7um2EldMeuLZZK71QwtzQ
+oauth.consumerSecret=ts2DTxM9EUSouZMVQBP6Zt3Ba2ZGgXjW5XASenCFuis
+oauth.accessToken=2192256366-mPEzbcnvd7V746oDcqgWJPPjAnzVSCO9ApldyqV
+oauth.accessTokenSecret=ytleWR5xrqtroQ1VmecxN2aphtJYSTfE7PRnoFNKuSXkw

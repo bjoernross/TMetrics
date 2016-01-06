@@ -1,0 +1,80 @@
+# This file contains all the properties to configure the
+# daemon service. Only alter properties, if you absolutely
+# know what you are doing.
+
+# The number of search terms each minion should work on
+minion.maxShortTermsCount = 1
+minion.maxLongTermsCount = 3
+
+# The duration after which the factor for the number of
+# search terms changes
+minion.expirationDurations = 00-00-01 00:00:00,00-00-07 00:00:00
+
+# The factor for the number of long search terms for a minion
+# to work on based on the expiration duration
+minion.expirationFactor = 3,2,1
+
+# The default (shortest possible) interval length for a search term
+minion.defaultIntervalLength = 00:15:00
+
+# The rate limit buffer. This number is subtracted from the max.
+# possible rate limit provided by Twitter
+minion.rateLimitBuffer = 20
+
+# The limit of search terms only used by limited minions
+minion.limitSearchTerms = 10
+
+# After reaching the interval length, we expect to fetch 100 * this
+# factor many tweets
+minion.throttleFactor = 0.9
+
+# The factors that get multiplied with the interval length based on
+# the user priority
+minion.priorityFactors = 0.5,0.75,1,1.5,2
+
+# Index of the default priority (counted from 0)
+minion.defaultPriorityIndex = 2
+
+# The maximum interval length that is acceptable
+minion.maxIntervalLength = 156:00:00
+
+# This factor gets multiplied into the interval length when setting it
+minion.outlierFactor = 3
+
+# NEVER CHANGE THIS VALUE UNLESS YOU ABSOLUTELY KNOW WHAT YOU ARE DOING.
+# DO NOT CHANGE IT!
+# NO, REALLY DON'T!
+minion.unlimitedRequestsPerSearchTerm = -1
+
+# If this flag is set to 0 the master will never spawn a limited minion.
+# Any other integer value than 0 will result in a limited minion to be
+# spawned.
+master.spawnLimitedMinion = 1
+
+# The rate limit given by Twitter. If Twitter changes its rate limit,
+# this has to be changed as well.
+master.twitterRateLimit = 180
+
+# The maximum bag size for tweets to be stored. If the bag size is
+# reached or overflowed, the treasurer starts working
+master.maxBagSize = 40000
+
+# The duration after which the treasurer starts working, if the bag
+# has not been emptied recently
+master.maxBagNotEmptiedDuration = 00:10:00
+
+# The duration in milliseconds that the master sleeps before looking
+# up the search terms again and maybe spawning new minions
+master.sleepDuration = 5000
+
+# The duration after which a Twitter profile is not any longer on
+# cooldown and can be reused
+master.profileResetTime = 00:16:30
+
+# The max. number of treasurers that can be busy in the treasury.
+# If this number is reached, no more minions will be spawned
+master.maxTreasurers = 3
+
+# The number of tweets that have to be on a heap before said heap
+# is being stored by a DB transaction
+treasurer.maxHeapSize = 500

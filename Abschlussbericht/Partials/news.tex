@@ -1,0 +1,218 @@
+\label{sec:news}
+Im Laufe des Projektseminars kam der Kundenwunsch auf, bei der Betrachtung des Graphen, welcher die Tweets pro Stunde (TPS) darstellt, zusätzliche Informationen zu erhalten. Diese sollen erklären, warum die Aktivität zu manchen Zeitpunkten außerordentlich hoch ist. Daraufhin wurde entschieden, ein Modul zu entwickeln, das dem Nutzer Nachrichten zu relevanten Zeitpunkten automatisch anzeigen kann. 
+
+Hinsichtlich der Benutzerfreundlichkeit und Nutzerbindung ist diese Funktion sinnvoll, da ein Nutzer die dargestellten Daten besser interpretieren kann, ohne dabei auf andere Systeme zurückgreifen zu müssen.
+
+\subsection{Identifikation interessanter Zeitpunkte}
+Um Zeitpunkte auf dem TPS-Graphen zu finden, die für einen Nutzer von Interesse sein könnten, wurden typische Methoden der Signalverarbeitung zur Suche nach Peaks evaluiert.
+
+Eine der einfachsten Methoden ist es, jeden Zeitpunkt als Peak zu markieren, der das absolute Maximum seiner unmittelbaren Nachbarschaft ist. Wie in Abbildung \ref{newspeaksbad} zu sehen ist, erzielt dies aufgrund der häufigen Schwankungen kein akzeptables Ergebnis. Statt der unmittelbaren Nachbarschaft ein Fenster fester Breite um den zu untersuchenden Punkt zu betrachten, erzeugt ebenfalls keine Peakauswahl, die der Intuition eines Benutzers entspricht. Wählt man beispielsweise eine Breite von 24 Stunden, so werden häufig nur die Maxima täglicher regulärer Schwankungen markiert, die für das Finden von Nachrichten nicht interessant sind.
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[point/.style={
+    thick,
+    draw=dgreen,
+    cross out,
+    inner sep=0pt,
+    minimum width=4pt,
+    minimum height=4pt,
+}]
+\definecolor{silver}{RGB}{158,158,169}
+\definecolor{midgray}{rgb}{.35,.35,.35}
+\definecolor{lightsilver}{RGB}{221,221,232}
+\definecolor{lblue}{RGB}{210,220,250}
+\definecolor{mblue}{RGB}{165,190,225}
+\definecolor{dblue}{RGB}{0,70,117}
+\definecolor{lgreen}{RGB}{200,245,185}
+\definecolor{mgreen}{RGB}{190,225,165}
+\definecolor{mred}{RGB}{225,190,165}
+\definecolor{dgreen}{RGB}{40,135,40}
+\definecolor{dred}{RGB}{135,40,40}
+    
+\begin{scope}[shift={(0,0)},scale=.2]
+\draw[-] (0,0.2) -- (1,1) -- (2,1.1) -- (3,0.5) -- (4,1.2) -- (5,0) -- (6,0.2) -- (7,1) -- (8,1.1) -- (9,4.5) -- (10,2.2) -- (11,2) -- (12,3.2) -- (13,1) -- (14,1.1) -- (15,0.5) -- (16,1.2) -- (17,0) -- (18,0.2) -- (19,1) -- (20,1.1) -- (21,0.5) -- (22,1.2) -- (23,0) -- (24,0.2) -- (25,1) -- (26,1.7) -- (27,0.5) -- (28,1.2) -- (29,0) -- (30,4.2);
+\node[point] at (2,1.1) {};
+\node[point] at (4,1.2) {};
+\node[point] at (9,4.5) {};
+\node[point] at (12,3.2) {};
+\node[point] at (14,1.1) {};
+\node[point] at (16,1.2) {};
+\node[point] at (20,1.1) {};
+\node[point] at (22,1.2) {};
+\node[point] at (26,1.7) {};
+\node[point] at (28,1.2) {};
+\node[point] at (30,4.2) {};
+\draw[->,semithick,>=stealth'] (-1.3,-1) -- (31,-1);
+\draw[->,semithick,>=stealth'] (-1,-1.3) -- (-1,5);
+\node[draw=none,silver,font=\scriptsize] at (-1,6) {\#tweets};
+\node[draw=none,silver,font=\scriptsize] at (33,-1) {time};
+\end{scope}
+
+\end{tikzpicture}
+\caption{Simple Auswahl der lokalen Maxima}
+\label{newspeaksbad}
+\end{figure}
+
+Diese einfache Methode kann durch einige Erweiterungen gute Ergebnisse erzielen. Das ist beispielsweise der Fall, wenn eine starke Glättung vorangestellt wird, ein breites Fenster gewählt wird und die zusätzliche Einschränkung gemacht wird, dass Peaks nicht nur das absolute Maximum in ihrem Umfeld sein müssen, sondern auch um einen bestimmten Schwellwert größer sind als ihr Umfeld. Dabei müssen allerdings einige Parameter festgelegt werden, und da die TPS-Graphen zu verschiedenen Suchbegriffen sehr unterschiedliche Formen haben, war es nicht möglich, allgemein passende Parameter zu finden, die bei vielen Suchbegriffen gute Resultate erzielt haben. Bei folgenden Versuchen wurde entsprechend versucht, eine möglichst geringe Anzahl von Parameter zu verwenden.
+
+Ein alternativer Ansatz ist es, starke Abweichungen von einer Ausgleichskurve zu markieren. Dazu wird zuerst eine Regressionsfunktion bestimmt und dann von zusammenhängenden Teilstücken des Ursprungsgraphen, die über dieser Regressionsfunktion liegen, das jeweilige Maximum als Peak markiert. Da viele Parameter und starke Spezialisierung zu vermeiden waren, wurden statt einer bestimmten Regressionsfunktion für unsere Anwendung eine konstante Funktion gewählt, die so liegt, dass unter ihr genau der Anteil $\alpha$ der kleinsten Werte des Graphen liegen. Dieses $\alpha$ ist standardmäßig auf 80\% gesetzt und der einzige Parameter.
+
+Um durch den Tages- und Wochenverlauf bedingte zyklische Schwankungen aus der Betrachtung herauszunehmen, wurde in Betracht gezogen, mit einer simplen Fouriertransformation eine Funktion zu bestimmen, die den Normalverlauf beschreibt, sodass dieser Wert von der Kurve abgezogen werden kann. Zum einen spricht gegen dieses Vorgehen, dass sich dieser Normalverlauf in seiner Amplitude verändern kann, durch stetige Veränderungen in der Relevanz eines bestimmten Themas. Zum anderen gibt es Suchbegriffe, deren relevante Peaks auch zyklisch auftreten, wie zum Beispiel bei der regelmäßig ausgestrahlten Fernsehserie Tatort. Stattdessen wurde die Lösung gewählt, zunächst tageweise Maxima zu bestimmen, dann über den diesen Werten die Peaks zu bestimmen und die so identifizierten Peaks dann wieder auf den TPS-Graph zu legen.
+
+Der vollständige Prozess zum Identifizieren von Peaks besteht nun aus 3 Schritten und ist in Abbildung \ref{newspeaksgood} illustriert. Zunächst werden in Schritt (1) die tageweisen Maxima bestimmt, um Schwankungen über den Tagesverlauf herauszufiltern. Dann wird in einem zweiten Schritt (2) die $\alpha$ (Standard: 80\%) Grenze und die zusammenhängend darüber liegenden Teilstücke erkannt. Dahinter steckt die Überlegung, dass ein Peak mindestens zu den 20\% größten Werten gehören muss. In Schritt (3) werden die Maxima dieser zusammenhängenden Teilstücke markiert und auf den Ausgangsgraphen gelegt.
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[point/.style={
+    thick,
+    draw=dgreen,
+    cross out,
+    inner sep=0pt,
+    minimum width=4pt,
+    minimum height=4pt,
+}]
+\definecolor{silver}{RGB}{158,158,169}
+\definecolor{midgray}{rgb}{.35,.35,.35}
+\definecolor{lightsilver}{RGB}{221,221,232}
+\definecolor{lblue}{RGB}{210,220,250}
+\definecolor{mblue}{RGB}{165,190,225}
+\definecolor{dblue}{RGB}{0,70,117}
+\definecolor{lgreen}{RGB}{200,245,185}
+\definecolor{mgreen}{RGB}{190,225,165}
+\definecolor{mred}{RGB}{225,190,165}
+\definecolor{dgreen}{RGB}{40,135,40}
+\definecolor{dred}{RGB}{135,40,40}
+    
+\begin{scope}[shift={(0,0)},scale=.2]
+\draw[-] (0,0.2) -- (1,1) -- (2,1.1) -- (3,0.5) -- (4,1.2) -- (5,0) -- (6,0.2) -- (7,1) -- (8,1.1) -- (9,4.5) -- (10,2.2) -- (11,2) -- (12,3.2) -- (13,1) -- (14,1.1) -- (15,0.5) -- (16,1.2) -- (17,0) -- (18,0.2) -- (19,1) -- (20,1.1) -- (21,0.5) -- (22,1.2) -- (23,0) -- (24,0.2) -- (25,1) -- (26,1.7) -- (27,0.5) -- (28,1.2) -- (29,0) -- (30,4.2);
+\draw[->,semithick,>=stealth'] (-1.3,-1) -- (31,-1);
+\draw[->,semithick,>=stealth'] (-1,-1.3) -- (-1,5);
+\node[draw=none,silver,font=\scriptsize] at (-1,6) {\#tweets};
+\node[draw=none,silver,font=\scriptsize] at (33,-1) {time};
+\end{scope}
+
+\node[single arrow, draw, fill=lblue, align=center, font=\small](parse) at (1, -2) {(1)};
+\node[single arrow, draw, fill=lblue, align=center, font=\small](parse) at (3.5, -4.5) {(2)};
+\node[single arrow, draw, fill=lblue, align=center, font=\small](parse) at (6, -7) {(3)};
+
+\begin{scope}[shift={(2.5,-2.5)},scale=.2]
+\draw[-,silver] (0,0.2) -- (1,1) -- (2,1.1) -- (3,0.5) -- (4,1.2) -- (5,0) -- (6,0.2) -- (7,1) -- (8,1.1) -- (9,4.5) -- (10,2.2) -- (11,2) -- (12,3.2) -- (13,1) -- (14,1.1) -- (15,0.5) -- (16,1.2) -- (17,0) -- (18,0.2) -- (19,1) -- (20,1.1) -- (21,0.5) -- (22,1.2) -- (23,0) -- (24,0.2) -- (25,1) -- (26,1.7) -- (27,0.5) -- (28,1.2) -- (29,0) -- (30,4.2);
+\draw[-] (2,1.1) -- (4,1.2) -- (8,1.1) -- (9,4.5) -- (12,3.2) -- (16,1.2) -- (20,1.1) -- (22,1.2) -- (26,1.7) -- (28,1.2) -- (30,4.2);
+\node[font=\tiny] at (2,1.1) {\textbullet};
+\node[font=\tiny] at (4,1.2) {\textbullet};
+\node[font=\tiny] at (8,1.1) {\textbullet};
+\node[font=\tiny] at (9,4.5) {\textbullet};
+\node[font=\tiny] at (12,3.2) {\textbullet};
+\node[font=\tiny] at (16,1.2) {\textbullet};
+\node[font=\tiny] at (20,1.1) {\textbullet};
+\node[font=\tiny] at (22,1.2) {\textbullet};
+\node[font=\tiny] at (26,1.7) {\textbullet};
+\node[font=\tiny] at (28,1.2) {\textbullet};
+\node[font=\tiny] at (30,4.2) {\textbullet};
+\draw[->,semithick,>=stealth'] (-1.3,-1) -- (31,-1);
+\draw[->,semithick,>=stealth'] (-1,-1.3) -- (-1,5);
+\node[draw=none,silver,font=\scriptsize] at (-1,6) {\#tweets};
+\node[draw=none,silver,font=\scriptsize] at (33,-1) {time};
+\end{scope}
+
+\begin{scope}[shift={(5,-5)},scale=.2]
+\draw[-,lightsilver] (0,0.2) -- (1,1) -- (2,1.1) -- (3,0.5) -- (4,1.2) -- (5,0) -- (6,0.2) -- (7,1) -- (8,1.1) -- (9,4.5) -- (10,2.2) -- (11,2) -- (12,3.2) -- (13,1) -- (14,1.1) -- (15,0.5) -- (16,1.2) -- (17,0) -- (18,0.2) -- (19,1) -- (20,1.1) -- (21,0.5) -- (22,1.2) -- (23,0) -- (24,0.2) -- (25,1) -- (26,1.7) -- (27,0.5) -- (28,1.2) -- (29,0) -- (30,4.2);
+
+\draw[-]  (9,4.5) -- (12,3.2);
+\node[font=\tiny] at (9,4.5) {\textbullet};
+\node[font=\tiny] at (12,3.2) {\textbullet};
+\node[font=\tiny] at (30,4.2) {\textbullet};
+
+\draw[-,dashed,semithick,dred] (-0.5,2.5) -- (30.5,2.5);
+\draw [decorate,dred,thick,decoration={brace,amplitude=4pt,mirror,raise=1pt}]
+(31,-1) -- (31,2.5);
+\node[draw=none,dred,font=\scriptsize] at (33,0.75) {{$\alpha$}};
+\draw[->,semithick,>=stealth'] (-1.3,-1) -- (31,-1);
+\draw[->,semithick,>=stealth'] (-1,-1.3) -- (-1,5);
+\node[draw=none,silver,font=\scriptsize] at (-1,6) {\#tweets};
+\node[draw=none,silver,font=\scriptsize] at (34,-1) {time};
+\end{scope}
+
+
+\begin{scope}[shift={(7.5,-7.5)},scale=.2]
+
+\draw[-,lightsilver] (0,0.2) -- (1,1) -- (2,1.1) -- (3,0.5) -- (4,1.2) -- (5,0) -- (6,0.2) -- (7,1) -- (8,1.1) -- (9,4.5) -- (10,2.2) -- (11,2) -- (12,3.2) -- (13,1) -- (14,1.1) -- (15,0.5) -- (16,1.2) -- (17,0) -- (18,0.2) -- (19,1) -- (20,1.1) -- (21,0.5) -- (22,1.2) -- (23,0) -- (24,0.2) -- (25,1) -- (26,1.7) -- (27,0.5) -- (28,1.2) -- (29,0) -- (30,4.2);
+
+\node[font=\tiny,silver] at (9,4.5) {\textbullet};
+\node[font=\tiny,silver] at (12,3.2) {\textbullet};
+\node[font=\tiny,silver] at (30,4.2) {\textbullet};
+\draw[-,silver]  (9,4.5) -- (12,3.2);
+\node[point] at (9,4.5) {};
+\node[point] at (30,4.2) {};
+\draw[-,dashed,semithick,mred] (-0.5,2.5) -- (30.5,2.5);
+\draw[->,semithick,>=stealth'] (-1.3,-1) -- (31,-1);
+\draw[->,semithick,>=stealth'] (-1,-1.3) -- (-1,5);
+\node[draw=none,silver,font=\scriptsize] at (-1,6) {\#tweets};
+\node[draw=none,silver,font=\scriptsize] at (33,-1) {time};
+\end{scope}
+
+
+\end{tikzpicture}
+\caption{Auswahlprozess zur Identifikation von Peaks}
+\label{newspeaksgood}
+\end{figure}
+
+Auf diese Weise werden Ergebnisse erzielt, die dicht an der Intuition der Benutzer liegen. Was mit dieser Methode nicht automatisch erkannt werden kann ist, wenn an einem Tag mehrere getrennte Ereignisse zu verschiedenen Zeitpunkten stattfinden. Falls der Nutzer selbst aber mehrere Peaks an einem Tag erkennen sollte, so steht ihm die Möglichkeit offen, durch einen Klick an die entsprechende Stelle der Kurve auch von nicht vorselektierten Zeitpunkten Nachrichten angezeigt zu bekommen.
+
+\subsection{Sammeln passender Nachrichten}
+Um zu allen gefundenen Peaks oder zu einem vom Benutzer ausgewählten Zeitpunkt Nachrichten für einen bestimmten Suchbegriff zu sammeln, werden Anfragen an die Anbieter Google News\footnote{\url{news.google.com}}, Bing News\footnote{\url{news.bing.com}} und Bing Web\footnote{\url{www.bing.com}} gestellt. Sie wurden ausgewählt, da sie die Möglichkeit bieten, die Ergebnisse als RSS-Feed auszugeben, und somit ihre Ausgabe leicht verarbeitet werden kann. Google News und Bing News gegeben in den meisten Fällen allerdings nur Nachrichten zurück, die jünger sind als 30 Tage. Daher wurde auch die Websuche von Bing miteinbezogen.
+
+Über diese Anfragen können spezifisch zu einem Tag und einem Suchbegriff Nachrichten angefordert werden. Gewünscht sind aber nicht nur tagesgenau sondern auch stundengenau relevante Nachrichten. Dazu werden, wie auch in Abbildung \ref{newsgathering} illustriert ist, parallel Tweets aus der Datenbank passend zum Suchbegriff und der konkreten Stunde gesammelt. Danach werden unter den erhaltenen Nachrichten jene ausgesucht, welche die größte Ähnlichkeit mit den Tweets besitzen. Dabei ist Ähnlichkeit definiert als Ähnlichkeit der Worthistogramme. Die Worthistogramme beschreiben die Anteile, mit denen jedes Wort in einem Text vorkommt und werden mit einer simplen Funktion verglichen, die gemeinsame Worte zählt und häufige Worte stärker gewichtet.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=.6,database/.style={
+      cylinder,
+      cylinder uses custom fill,
+      cylinder body fill=lblue,
+      cylinder end fill=lblue,
+      shape border rotate=90,
+      aspect=0.25,
+      align=center,
+      draw
+    }]
+\definecolor{silver}{RGB}{158,158,169}
+\definecolor{midgray}{rgb}{.35,.35,.35}
+\definecolor{lightsilver}{RGB}{221,221,232}
+\definecolor{lblue}{RGB}{210,220,250}
+\definecolor{mblue}{RGB}{165,190,225}
+\definecolor{dblue}{RGB}{0,70,117}
+\definecolor{lgreen}{RGB}{200,245,185}
+\definecolor{mgreen}{RGB}{190,225,165}
+\definecolor{mred}{RGB}{225,190,165}
+\definecolor{dgreen}{RGB}{40,135,40}
+\definecolor{dred}{RGB}{135,40,40}
+    
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne1) at (6, 0) {Google News};3
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne2) at (11.5, 0) {Bing Web};
+\node[ellipse,fill=mgreen,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 2.9cm] (ne3) at (17, 0) {Bing News};
+
+\draw [decorate,thick,decoration={brace,amplitude=10pt,mirror,raise=4pt}]
+(4,-1) -- (19,-1);
+\node[single arrow, draw, fill=lightsilver, align=center, shape border rotate=270, minimum height=3cm,font=\small](parse) at (11.5, -4) {\ \\ sammle und\\ parse RSS};
+
+
+\node[database, minimum width=2cm, minimum height=1.5cm, font=\small] (db) at (0,0) {MySQL \\ DB};
+\node[single arrow, draw, fill=lightsilver, align=center, shape border rotate=270, minimum height=3cm,font=\small](parse) at (0, -4.2) {\ \\ sammle\\ Tweets};
+
+
+\node[fill=lblue,draw=black,align=center,font=\small, minimum height=1cm, minimum width= 10cm] (ne3) at (5.75, -9) {vergleiche Nachrichten und Tweets um relevante Nachrichten zu finden};
+\node[single arrow, draw, fill=mred, align=center, shape border rotate=0,font=\small, minimum height=2.6cm, minimum width=1.3cm](parse) at (19.3,-9) {Top Nachrichten};
+
+
+\end{tikzpicture}
+\caption{Verfahren zum Sammeln von Nachrichten}
+\label{newsgathering}
+\end{figure}
+
+Werden vom Nutzer durch das Klicken auf einen konkreten Zeitpunkt des TPS Graphen Nachrichten angefragt, ist das Sammeln der Nachrichten je Anbieter und das Sammeln der Tweets in unterschiedlichen Threads parallelisiert. Wenn die Peaks bestimmt wurden und für alle Peaks Nachrichten angefragt werden, dann wird auch dieser Prozess in je einem Thread pro Zeitpunkt parallelisiert, die dann wiederum Threads für das Sammeln der Nachrichten je Anbieter und Sammeln der Tweets starten. Die Anfragen an die Datenbank werden über einen Mutex koordiniert sequentiell gestellt, weil dadurch eine bessere Performanz erzielt wurde. So werden die Anfragen an Nachrichten-Anbieter, die eigene Datenbank und das Verarbeiten ankommender Daten weitestgehend parallelisiert.
+
+Das Modul erfüllt in seiner momentanen Realisierung die Bedürfnisse des Kunden. Die Geschwindigkeit ist hauptsächlich durch die Performanz der Datenbank bei der Abfrage der Tweets begrenzt. Eine Erweiterungsmöglichkeit ist, gefundene Peaks und entsprechende Nachrichten in der Datenbank zu speichern, statt sie bei jeder Anfrage neu zu bestimmen. So wären alte Nachrichten der Anbieter Google News und Bing News auch über deren Zeitgrenzen hinaus verfügbar sind.

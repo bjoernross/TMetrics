@@ -1,0 +1,92 @@
+
+\begin{frame}{Module - Daemon - Aufgaben}
+	\begin{itemize}
+		\item Sammeln von Tweets zu Begriffen
+		\item Speichern von Tweets in der Datenbank
+		\item Verwendung der Twitter API
+	\end{itemize}
+	
+	\pause
+	
+	\begin{center}
+		\begin{tabular}{ccccc}
+		\includegraphics[width=0.1\textwidth]{../img/daemon/Database.png} &  $\leftrightarrow$ & \includegraphics[width=0.1\textwidth]{../img/daemon/java.png} & $\leftrightarrow$ &  \includegraphics[width=0.1\textwidth]{../img/daemon/Twitter_logo_blue.pdf} \\
+		Datenbank & & Daemon & & TwitterAPI \\
+		\end{tabular}
+
+	\end{center}
+	
+	\pause
+	
+	\begin{itemize}
+		\item Sentiment berechnen
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Module - Daemon - Twitter-API}
+	\begin{itemize}
+		\item Twitter hat eine offizielle API
+		\item Search-API: REST-Anfragen liefern JSON-Objekte
+		\item Twitter API unterliegt Restriktionen % (Rate Limit pro Profil, Art, wie Tweets abgefragt werden)
+		\item Kommunikation mit Twitter über Twitter4J
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Module - Daemon - Suchstrategie}
+	\begin{itemize}
+		\item Suche zu Suchbegriff immer rückwärts
+		\item Suche: ältester Tweet ist Beschränkung für nächste Anfrage
+		\item Tweets sind zeitlich sortiert
+		\pause
+		\item Keine älteren Tweets mehr: Startzeitpunkt auf jetzt setzen
+		\item Ab diesem Zeitpunkt wird erneut rückwärts gesucht
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Module - Daemon - Suchstrategie}
+	\begin{center}
+	\includegraphics<1>[width=0.9\textwidth]{../img/daemon/SearchStrategy1.pdf}
+	\includegraphics<2>[width=0.9\textwidth]{../img/daemon/SearchStrategy1_5.pdf}
+	\includegraphics<3>[width=0.9\textwidth]{../img/daemon/SearchStrategy2.pdf}
+	\includegraphics<4>[width=0.9\textwidth]{../img/daemon/SearchStrategy3.pdf}
+	\includegraphics<5>[width=0.9\textwidth]{../img/daemon/SearchStrategy4.pdf}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Module - Daemon - Parallele Suche}
+	\begin{itemize}
+		\item Parallele Suche: mehr Tweets in kürzer Zeit finden
+		\item Idee: mehrere Profile nutzen (Multi-Threading)
+		\item Daemon als Master-Worker-Architektur realisieren
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Module - Daemon - Scheduling der Suchbegriffe}
+	\begin{itemize}
+		\item Wie teilt man die Suchbegriffe auf?
+		\item Short-Terms, kaum neue Tweets
+		\item Long-Terms, viele neuen Tweets
+		\item Worker erhält sowohl Short- als auch Long-Terms
+	\end{itemize}
+\end{frame}
+
+%\begin{frame}[t]{Architektur}
+%	\vspace{-1cm}
+%	\begin{center}
+%	\includegraphics<1>[height=\textheight]{../img/daemon/DataFlow1.pdf}
+%	\includegraphics<2>[height=\textheight]{../img/daemon/DataFlow2.pdf}
+%	\includegraphics<3>[height=\textheight]{../img/daemon/DataFlow3.pdf}
+%	\includegraphics<4>[height=\textheight]{../img/daemon/DataFlow4.pdf}
+%%	\includegraphics<5>[height=\textheight]{../img/daemon/DataFlow1.pdf}
+%	\end{center}
+%\end{frame}
+
+
+\begin{frame}{Module - Daemon - Erfahrungen}
+	\begin{itemize}
+		\item Multi-Threading ist komplex
+		\item Probleme mit dem Speicherverbrauch der JVM
+		\item Konsistenz der verschiedenen Teile komplex
+	\end{itemize}
+\end{frame}

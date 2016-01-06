@@ -1,0 +1,46 @@
+\label{sec:ausblick}
+TMetrics ist ein System zur Datenanalyse von zu Suchbegriffen zugehörigen Tweets.
+Neben dem Sammeln der Tweets ermöglicht TMetrics es dem Benutzer, sich die einzelnen Tweets 
+anzeigen zu lassen und ihren Sentimentwert festzustellen.
+Ebenfalls wird dem Benutzer die Möglichkeit geboten, sich Nachrichten eines Tages zu einem 
+Begriff anzeigen zu lassen.
+Zudem gibt es eine Anzeige der häufigsten Begriffe aller Tweets zu einem Suchbegriff ebenso 
+wie die Anzeige der am häufigsten verwendeten Hashtags des Suchbegriffs.
+Des Weiteren existiert noch die Möglichkeit, sich Cluster von Tweets anzeigen zu lassen.
+
+Das gesamte System besteht aus einem Daemon, einem REST-Service und einem Frontend.
+Der Daemon sucht permanent nach neuen Tweets zu vorgegebenen Suchbegriffen und speichert diese in einer lokalen Datenbank mitsamt berechnetem Sentiment ab. 
+Der REST-Service beantwortet Anfragen, die vom Frontend aus durch den Benutzer gestellt werden, während das Frontend nur für die Darstellung der anzuzeigenden Daten zuständig ist.
+
+Die Teilnehmer des Projektseminars sind mit dem Gesamtprodukt mit Ausnahme der mangelnden 
+Performance zufrieden.
+Das zu Beginn des Projektseminars angestrebte Ziel, ein System zur Datenanalyse von Tweets 
+zu schaffen, wurde erreicht.
+Zwar sind nicht alle geplanten Funktionalitäten wie eine Heatmap zu Suchbegriffen oder ein Kinomodul umgesetzt worden.
+Aber dafür ist das Nachrichtenmodul als neue, zuvor nicht geplante Funktionalität hinzugekommen.
+
+Die mangelnde Performance, die aufgrund der immer größer werdenden Datenmenge in der Datenbank auftritt, hat sich leider durch das gesamte Projektseminar hinweg durchgezogen. Es wurden viele Anstrengungen unternommen, diesen Mangel zu beheben. Dazu zählen
+\begin{itemize}
+\item das Anpassen des Datenbankschemas,
+\item die Einführung von Indizes auf Tabellen innerhalb der Datenbank,
+\item die Optimierung von SQL-Queries,
+\item und ein effizienteres Arbeiten mit der Datenbank innerhalb des REST-Services und des Daemons.
+\end{itemize}
+Zwar haben all diese Änderungen teilweise eine enorme Verbesserung der Performance relativ zu vorher bewirkt, leider wurde aber dennoch nicht die von uns gewünschte Performance erreicht.
+
+Retrospektiv stellte sich uns die Frage, ob die Entscheidung der Wahl einer relationalen Datenbank, in unserem Fall MySQL, nicht falsch gewesen ist, da in \cite[S.~24]{twitter_data_analytics} eine deutlich höhere Datenbankgeschwindigkeit mit einer NoSQL-Datenbank wie beispielsweise MongoDB \cite{mongodb} erreichbar zu sein scheint. Gerade beim Thema Big Data sollen NoSQL-Datenbanken gegenüber relationalen Datenbanken im Vorteil sein (\cite{seven_databases}, zitiert nach \cite[S.~23]{twitter_data_analytics}).
+Vielleicht hätte aber auch ein anderes Datenbankschema bereits die angesprochene Performance radikal verbessert.
+
+Zwar ist die Performance nicht zufriedenstellend, dafür aber funktionieren die einzelnen Komponenten wie Clustering, Sentimentanalyse und Nachrichtenmodul im gewünschten Umfang. Mögliche Optimierungen oder Probleme wurden bereits in den jeweiligen Abschnitten der genannten Komponenten erwähnt.
+
+Trotzdem besteht weiterhin noch großes Ausbaupotential, was allerdings nicht enttäuschend, sondern vielmehr der abgedeckten Breite des Systems geschuldet ist.
+Diese ermöglichte es nicht auch noch, die einzelnen Aspekte des Systems intensiver zu erweitern oder optimieren. Erweiterungsmöglichkeiten oder mögliche Optimierungsmaßnahmen wurden bereits in den Abschnitten über die einzelnen Aspekte des Systems behandelt.
+
+Der Aufbau des Projektseminars durch Verwendung von Scrum als Entwicklungsmodell hat uns sehr geholfen, iterativ ein funktionierendes System zu schaffen, das mit jeder neuen Iteration erweitert und verbessert wurde.
+Der wöchentliche Wechsel des Scrum-Masters hat jedem Teilnehmer zeitweise eine Verantwortung über das Projekt gegeben.
+Somit ist jeder Einzelne in dieser Rolle dazu motiviert, sich mit dem Gesamtsystem auseinander zu setzen und mit den einzelnen Arbeitsbereichen zu kommunizieren, um gegebenenfalls auftretende Schwierigkeiten und Probleme früh zu erkennen.
+Des Weiteren war das Planning Poker zum Einschätzen des Zeitaufwands hilfreich, um einen realistisches Ziel am Ende einer Iteration anzustreben und zu erreichen.
+Die Verwendung eines Scrum-Boards ermöglichte es jedem Teilnehmer, immer zu sehen, wie weit das Projekt innerhalb der Iteration bereits fortgeschritten und an welchen Stellen gegebenenfalls noch weitere Hilfe nötig war.
+
+Die Stimmung unter allen Teilnehmern war immer gut, sodass ein harmonisches und motivierendes Arbeitsklima entstand, das die Produktivität gesteigert hat.
+Insgesamt haben während des Projektseminars alle Teilnehmer viel Neues gelernt, sei es über das Entwickeln mithilfe von Scrum, die Versionierungskontrolle durch Git, besondere Tricks in JavaScript, mögliche Stolpersteine bei der Multi-Threading-Entwicklung, die Verwendung eines Build-Management-Tools wie Maven, das Einrichten eines Servers und vieles mehr, was in Hinblick auf zukünftige (berufliche) Projekte hilfreich sein wird.

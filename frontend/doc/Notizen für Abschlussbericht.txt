@@ -1,0 +1,11 @@
+Problem: snowden und korea parallel -> wurst nicht mehr möglich
+Ursache: max parallel connections 6, für Browser siehe:
+http://stackoverflow.com/questions/985431/max-parallel-http-connections-in-a-browser
+
+Behebung: Request Pool, Schrittweise abarbeiten
+
+
+Problem: Wie animieren wir den Ladebalken am besten?
+Lösung 1: Per Javascript setInterval verwenden, um in gleichmäßigen Zeitschritten die Anzeige zu aktualisieren
+Lösung 2 (wird verwendet): Lediglich die Breite des Ladebalkens ändern  und die Animation per CSS Transitions realisieren 
+ -> dazu: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Using_CSS_transitions

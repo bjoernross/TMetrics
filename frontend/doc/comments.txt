@@ -1,0 +1,6 @@
+Kommentare zu den HTML-/CSS-Files
+
+index.html
+ - <script>if (typeof jQuery === "undefined") {document.write('<script src="js/jquery-2.0.3.min.js">\x3C/script>')}</script>
+ -> Falls jQuery auf dem CDN nicht geladen werden konnte, soll jQuery lokal geladen werden. 
+	\x3C steht für < und wird verwendet, da </script> nicht wörtlich vorkommen sollte bevor der script-Teil wirklich geschlossen wird.

@@ -1,0 +1,53 @@
+# Created by http://gitignore.io
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war # what is it good for
+*.ear
+
+# Mac #
+.DS_Store
+
+#Windows shit'
+Thumbs.db
+
+#a bunch of temporary files
+*~
+*.bak
+*.swp
+*.swo
+
+database.properties
+
+#Intellij
+*.idea
+
+#all kinds of logs
+*.log
+
+#tex files
+*.out
+*.acn
+*.aux
+*.toc
+*.idx
+*.ist
+*.glo
+*.gz*
+Main.pdf
+*.auxlock
+*.nav
+*.snm
+*.backup
+*.kilepr
+*.bbl
+*.blg
+*.md5
+
+#more tex/tkiz stuf
+Abschlusspraesentation/preambel/*.pdf
+*.dpth
+/bin/

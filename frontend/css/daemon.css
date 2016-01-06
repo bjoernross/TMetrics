@@ -1,0 +1,63 @@
+#alertContainer {
+	margin-top: 15px;
+}
+
+.priorityInput {
+	width: 48px;
+	height: 24px;
+	padding: 1px;
+	text-align: center;
+}
+
+label {
+	display: inline;
+	margin-bottom: 0;
+}
+
+.checkedCell:before {
+	content: '\2714'; /*nice Unicode checkmark*/
+	color: #5cb85c;
+}
+
+.uncheckedCell:before {
+	content: '\2717'; /*nice Unicode X*/
+	color: #d9534f;
+}
+
+.activeCheckbox {
+	display: none;
+}
+
+.activeCheckbox + label {
+	background-color: #fafafa;
+	border: 1px solid #cacece;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+	padding: 11px;
+	border-radius: 3px;
+	display: inline-block;
+	position: relative;
+}
+
+.activeCheckbox + label:active, .activeCheckbox:checked + label:active {
+	border-color: #66afe9;
+	outline: 0;
+  		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        	    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.activeCheckbox:checked + label {
+	border-color: #66afe9;
+	outline: 0;
+  		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        	    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+	color: #99a1a7;
+}
+
+.activeCheckbox:checked + label:after {
+	content: '\2714';
+	font-size: 14px;
+	position: absolute;
+	top: 1px;
+	left: 5px;
+	color: #99a1a7;
+}

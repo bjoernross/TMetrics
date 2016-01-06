@@ -1,0 +1,591 @@
+\section{Cluster-Analyse}
+%Wladimir
+In der frühen Phase des Projektseminars wurden verschiedene Ideen für das 
+Projekt vorgeschlagen. Eine der Ideen beschäftigte sich mit dem Gedanken, 
+die Tweets als Punkte zu repräsentieren und damit explorativ zu arbeiten.
+Dabei sollte es möglich sein, durch die Entfernung zwi\-schen den Tweets zu
+sehen, ob zwei Tweets zu einem Thema gehören und eher die selbe Meinung vertreten oder nicht. Die Abbildung 
+\ref{fig:ClusteringIdee} illustriert die vorgestellte Idee, wobei die einzelnen Symbole 
+die Tweets repräsentieren und zu Clustern zusammengefasst sind. Damit kann ein Benutzer sehen, welche Gruppen sich bilden und wie die Meinungen zu einem bestimmten Thema aussehen. Es könnte dabei um die Entscheidung gehen,
+welchen Film man sich angucken möchte, aber auch um die Entwicklung eines 
+neuen Produktes, wobei das neue Produkt möglichst die Wünsche der Benutzer erfüllen sollte.
+Dies motivierte die Implementierung einer Cluster-Analyse für Tweets.
+
+\begin{figure}[h]
+ \centering
+ \input{Bilder/Clustering/ClusteringIdee.tikz}
+\caption{Illustration der Idee zur Clusteranalyse von Tweets.}
+\label{fig:ClusteringIdee}
+\end{figure} 
+
+%\subsection{Struktur des Kapitels}
+%\label{sec:clusternChapterStructur}
+%Erwin
+Der Aufbau dieses Kapitels orientiert sich dabei an der grundlegenden 
+Vorgehensweise der Cluster-Analyse, die in Abbildung \ref{fig:ClusterVorgehen} 
+dargestellt ist. Nach Abruf der Daten erfolgt zunächst die Extraktion der 
+Merkmale der zu gruppierenden Objekte. Diese Objekte können sowohl Tweets als auch Hashtags sein. 
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[scale=0.7]{./Bilder/Clustering/ClusteringAufbau.pdf}
+\caption{Vorgehensweise bei der Cluster-Analyse}
+\label{fig:ClusterVorgehen}
+\end{figure}
+
+Bei der Analyse von Tweets stellt die beschränkte Textlänge ein Problem dar, 
+wodurch sich nur wenige Informationen extrahieren lassen. Daher wurden schrittweise 
+verschiedene Ansätze zur Merkmalsextraktion implementiert, zum Beispiel die Erfassung der 
+Hashtags oder der Wörter eines Tweets, auch Unigrams genannt. Diese Ansätze sind in Abschnitt \ref{subsec:ClusterTweets} beschrieben.
+Zusätzlich erfolgt eine Cluster-Analyse der Hashtags, welches Kapitel \ref{subsec:ClusterHashtags} beschreibt. 
+Hier lassen sich bei der Merkmalsextraktion eines Hashtags alle Tweets, die diesen Hashtag enthalten, heranziehen. 
+Damit sind mehr Informationen vorhanden, um einzelne Hashtags zu gruppieren.
+Kapitel \ref{subsec:ClusterTweetsWithHashtags} beschreibt einen zweistufigen Ansatz, 
+welcher auf Basis der Hashtag"=Cluster versucht, Tweets zu gruppieren. 
+Anschließend wird die Distanz der Objekte basierend auf den erhobenen Merkmalen berechnet. 
+Mit dem Distanzmaß ist es nun möglich, die eigentliche Cluster"=Analyse 
+durch\-zu\-füh\-ren (Kapitel \ref{subsec:ClusterAlgorithmen}). 
+Gleichzeitig erfolgt eine Darstellung der Objekte im zweidimensionalen Raum, 
+basierend auf den Distanzen (Kapitel \ref{subsec:MDS}). 
+Die Cluster"=Zuordnungen sowie die Positionen im zweidimensionalen Raum werden 
+anschließend dem Frontend zur grafischen Aufbereitung übergeben.
+Das Kapitel schließt mit einer Diskussion der Ergebnisse und gibt einen Ausblick, 
+welche Schritte in wei\-te\-ren Scrum"=Iterationen möglich gewesen wären.
+
+%Erwin:
+\subsection{Cluster-Analyse von Tweets} \label{subsec:ClusterTweets}
+
+Aus Tweets lassen sich verschiedene Typen von Merkmalen ableiten, mit denen es möglich ist, 
+Tweets nach ihrer gegenseitigen Ähnlichkeit zu bewerten. Diese Merkmalstypen werden im Folgenden anhand eines durchgehenden Beispiels erläutert:
+\begin{itemize}
+\item \textbf{Tweet 1:} \#CDU \#SPD Merkel ist in London
+\item \textbf{Tweet 2:} \#CDU \#SPD Merkel reist nach London
+\item \textbf{Tweet 3:} Merkel mag \#Rom.
+\end{itemize}
+
+%Erwin
+\subsubsection{Hashtags als Merkmale}\label{subsec:HashtagsAlsMerkmale}
+Die Erfassung der Hashtags eines Tweets stellt die erste Möglichkeit dar, Tweets gegenseitig zu bewerten. 
+Da ein Tweet in der Regel keine Wiederholung von Hashtags enthält, 
+zählt nur das Auftreten des Hashtags, nicht die Anzahl. 
+Damit ist das Hashtag-Merkmal binärkodiert, wobei eine 1 für das Auftreten im Tweet steht. 
+Im obigen Beispiel ergibt sich somit die Tabelle \ref{fig:ClusterTab1}. 
+Die Zeilen stellen die Tweets dar, die Spalten die erhobenen Merkmale für die Cluster-Analyse.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccc}
+\toprule
+ & \#CDU & \#SPD &  \#Rom \\ 
+\midrule
+Tweet~1 & 1 & 1  & 0 \\ 
+ 
+Tweet~2 & 1 & 1  & 0 \\ 
+ 
+Tweet~3 & 0 & 0  & 1 \\ 
+\bottomrule 
+\end{tabular} 
+\caption{Binäre Merkmale eines Tweets: Hashtags}
+\label{fig:ClusterTab1}
+\end{table}
+
+Dieses Beispiel erläutert auch die Idee hinter der Hashtag-Erfassung. 
+Da Hashtags als Schlagwörter einen Tweet beschreiben, sollten zwei Tweets 
+thematisch ähnlicher sein, je mehr übereinstimmende Hashtags sie besitzen.
+Im vorliegenden Beispiel sind sich Tweet~1 und Tweet~2 ähnlicher, 
+denn beide verwenden die Hashtags \glqq \#CDU\grqq{} und \glqq \#SPD\grqq{}. 
+
+Die Ähnlichkeitserfassung hängt von der Datenskalierung ab. 
+Da die Merkmale bi\-när\-ko\-diert sind, kommen Kennzahlen in Frage, 
+die die Übereinstimmungen abzählen. Dabei kommen jedoch nur 
+Ähnlichkeitsmaße in Frage, bei denen das gleiche Auftreten 
+(eine 1er-Übereinstimmung bei jeweils zwei Tweets) eine Rolle spielt. 
+Dementsprechend wurden die Ähnlichkeitsmaße Dice, S-Koeffizient, M-Koeffizient und Russel Rao in Betracht gezogen.
+
+%Wladimir
+Sei $n_{11}$ die Anzahl der gemeinsam aufgetretenen
+Merkmale in zwei Tweets,  $n_{10}$ die Anzahl der Merkmale, die nur im ersten Tweet vorkommen,
+$n_{01}$ die Anzahl der Merkmale, die nur im zweiten Tweet vorkommen und 
+$n_{00}$ die Anzahl der Merkmale, die in den beiden Tweets nicht vorkommen, dann sind die genannten Ähnlichkeiten
+zwi\-schen zwei Tweets wie folgt definiert:
+\begin{align*}
+& \frac{2n_{11}}{n_{01}+n_{10}+2n_{11}}, \tag{Dice} \\\\
+& \frac{n_{11}}{n_{01}+n_{10}+n_{11}}, \tag{S-Koeffizient} \\\\
+& \frac{n_{00}+n_{11}}{n_{00}+n_{01}+n_{10}+n_{11}}, \tag{M-Koeffizient}\\\\
+& \frac{n_{11}}{n_{00}+n_{01}+n_{10}+n_{11}} \tag{Russel Rao}.
+\end{align*}
+
+%\subsection{Wahl der binären Ähnlichkeitsmaße}
+%Für die Cluster-Analyse der Tweets mit Hilfe der Hashtags beziehungsweise der Wörter wurden binäre 
+%Ahnlichkeitmaße verwendet, siehe Kapitel \ref{subsec:HashtagsAlsMerkmale} und \ref{subsec:WoerterAlsMerkmale}.
+%Um einen besseren Eindruck von den unterschiedlichen Ähnlichkeitsmaßen zu bekommen, haben wir ihre Wirkung auf das Ergebnis
+%getestet. Die Ähnlichkeitsmaße Dice, S-Koeffizient, M-Koeffizient und Russel Rao wurden in Betracht gezogen, 
+%weil sie das gemeinsame Auftreten der Merkmale berücksichtigen. Sei $n_{11}$ die Anzahl der gemeinsam aufgetretenen
+%Merkmale in zwei Tweets,  $n_{10}$ die Anzahl der Merkmale, die nur im ersten Tweet vorkamen,
+%$n_{01}$ die Anzahl der Merkmale, die nur im zweiten Tweet vorkamen und 
+%$n_{00}$ die Anzahl der Merkmale, die in den beiden Tweets nicht vorkamen, dann sind die genannten Ähnlichkeiten
+%zwi\-schen zwei Tweets wie folgt definiert:
+%\begin{align}
+%\frac{2n_{11}}{n_{01}+n_{10}+2n_{11}}, \tag{Dice} \\
+%\frac{n_{11}}{n_{01}+n_{10}+n_{11}}, \tag{S-Koeffizient} \\
+%\frac{n_{00}+n_{11}}{p}, \tag{M-Koeffizient}\\
+%\frac{n_{11}}{p} \tag{Russel Rao}.
+%\end{align}
+
+% \def\myDissScale{0.33}
+% \begin{figure}[ht]
+%    \centering
+%       \subcaptionbox{Dice\label{img:Dice}}{\input{Bilder/Clustering/DiceCoefficient.tikz}} \quad
+%       \subcaptionbox{S-Koeffizient\label{img:SCoefficient}}{\input{Bilder/Clustering/SCoefficient.tikz}} \\
+%       \subcaptionbox{M-Koeffizient\label{img:MCoefficient}}{\input{Bilder/Clustering/MCoefficient.tikz}} \quad
+%       \subcaptionbox{Russel Rao\label{img:RusselRao}}{\input{Bilder/Clustering/RusselRao.tikz}} 
+%    \caption[Vergleich der verwendeten Ähnlichkeitsmaße]{Vergleich der verwendeten Ähnlichkeitsmaße}\label{img:AehnlichkeitsmasseVergleich}
+% \end{figure}
+
+Die jeweiligen Kennzahlen haben einen Einfluss auf das Ergebnis der Cluster-Analyse, da sich bei jeder Kennzahl andere Ähnlichkeiten ergeben. 
+An der Formel kann man ablesen, welche Bedeutung das jeweilige Maß hat. Verwendet man beispielsweise S-Ko\-ef\-fi\-zi\-en\-ten, dann sind sich zwei Tweets
+um so ähnlicher, je mehr gemeinsame Hashtags sie haben ($n_{11}$) und die Hashtags, die nur in einem der Tweets vorkommen ($n_{01}$ und $n_{10}$) reduzieren die Ähnlichkeit.
+Bei der Verwendung von M-Koeffizient würden im Gegensatz zu  S-Koeffizient auch das Fehlen eines  Hashtags in beiden Tweets ($n_{00}$) sie ähnlicher machen,
+was natürlich nicht erwünscht ist.
+% Abbildung \ref{img:AehnlichkeitsmasseVergleich} zeigt die Ergebnisse bei der Verwendung der jeweiligen
+% Ähnlichkeitsmaße. Die Ergebnisse des
+% Dice Ähnlichkeitsmaßes in der Abbildung \ref{img:Dice} und des S-Koeffizienten in der Abbildung \ref{img:SCoefficient}
+% sind sich sehr ähnlich, was sich auf die Ähnlichkeit der Formel zurückführen lässt. Der M-Koeffizient in der
+% Abbildung \ref{img:MCoefficient},
+% und Russel Rao in der Abbildung \ref{img:RusselRao} liefern hingegen Ergebnisse, die von den anderen stark abweichen. 
+
+Obwohl Russel Rao nur die gemeinsam
+auftretenden Merkmale berücksichtigt, bildet sich oft ein Cluster, der sehr viele Tweets beinhaltet. Das liegt daran, dass
+die Tweets zu einem gegeben Suchbegriff von dem dazugehörigen Hashtag dominiert werden, bei\-spiels\-wei\-se beim Suchbegriff Schumacher der Hashtag \glqq \#schumacher\grqq{}. Da das fast immer der Fall ist, haben wir uns gegen das Russel-Rao-Ähnlichkeitsmaß entschieden.
+Der M-Koeffizient berücksichtigt
+die Merkmale, die in beiden betrachteten Tweets nicht vorkommen ($n_{00}$) und ist somit für die hier implementierte Anwendung ungeeignet.
+
+%Erwin
+Wir haben uns für den S-Koeffizient entschieden, weil Russel Rao und der M-Koeffizient ungeeignet sind und Dice keine signifikante Veränderungen bewirkt hat.
+In der praktischen Anwendung jedoch ergaben sich keine sinnvollen Distanzen, da ein Tweet nur wenig Hash\-tags enthält 
+und somit keine oder nur wenig Übereinstimmungen mit anderen Tweets besitzt. 
+Dadurch lassen sich keine aussagekräftigen Distanzen ableiten.
+
+%Erwin
+\subsubsection{Unigrams als Merkmale}\label{subsec:WoerterAlsMerkmale}
+Da die Hashtag-Erfassung keine aussagekräftigen Ergebnisse liefert, wurden als zweiten Ansatz die Unigrams (einzelne Wörter) eines Tweets als Merkmal erfasst. Da dieses Merkmal bei der Sentiment-Analyse bereits implementiert ist (siehe Kapitel \ref{sec:Sentiment}), wurde hier auf diese Implementierung zurückgegriffen. Da bei der Sentiment-Analyse nur das Auftreten eines Unigrams, nicht die Anzahl der Unigrams im Tweet zählt, ergibt sich hier durch die Wiederverwendung der Implementierung erneut ein binäres Merkmal. Tabelle \ref{fig:ClusterTab2} zeigt das Resultat für das obige Beispiel der drei Tweets. Eine 1 steht für die Anwesenheit des Wortes im Tweet, eine 0 für die Abwesenheit.
+Die Reihenfolge der Merkmale in der Tabelle ergibt sich, wenn man die Tweets, beginnend mit Tweet~1, von links nach rechts durchgeht und beim ersten Auftreten eines Wortes eine neue Spalte hinzufügt. Exis\-tiert das Wort bereits als Merkmal, wird die bisherige Spalte verwendet. 
+Außerdem ist anzumerken, dass auch Hashtags erneut als Merkmale mit einfließen, da sie ebenfalls Wörter darstellen.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{ccccccccccc}
+\toprule
+ & \#CDU & \#SPD & Merkel & ist & in & London & reist & nach & mag & \#Rom \\ 
+\midrule
+Tweet 1 & 1  & 1 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 \\ 
+ 
+Tweet 2 & 1  & 1 & 1 & 0 & 0 & 1 & 1 & 1 & 0 & 0\\ 
+
+Tweet 3 & 0  & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\ 
+\bottomrule
+\end{tabular} 
+\caption{Binäre Merkmale eines Tweets: Unigrams}
+\label{fig:ClusterTab2}
+\end{table}
+
+Das Beispiel aus der Tabelle \ref{fig:ClusterTab2} verdeutlicht die Idee, Unigrams als Merkmale zu verwenden. Während bei Tweet~1 und Tweet~2 vier von zehn Wörtern übereinstimmen, stimmt zum Beispiel zwi\-schen Tweet~1 und Tweet~3 beziehungsweise Tweet~2 und Tweet~3 nur ein Wort überein. Damit sind sich Tweet~1 und Tweet~2 ähnlicher. In der konkreten Implementierung wurde der S-Koeffizient verwendet, analog zur Hashtag-Analyse.
+
+Das Ziel durch die zusätzliche Erfassung der Unigrams eines Tweets war eine differenziertere Ähnlichkeitsberechnung, da mehr Merkmale zur Verfügung stehen. Außerdem fließen die Hashtags nach wie vor in die Analyse mit ein, da sie eine Teilmenge der erfassten Unigrams darstellen.
+
+Allerdings ergab sich bei praktischen Anwendung das Problem, dass zwar mehr Merkmale zur Verfügung standen, aber die Tweets weiterhin nur wenig übereinstimmende Merkmale hatten. 
+Mit diesem Ansatz können Retweets sehr gut gruppiert und positioniert werden, da die Merkmale komplett übereinstimmen und so zu einer höheren Ähnlichkeit als zu allen anderen Tweets führen. Jedoch stimmen zwei Tweets, die keine Retweets voneinander sind, meist nur in wenigen Worten überein. Damit konnten keine aussagekräftigen Distanzen zwi\-schen normalen Tweets berechnet werden. 
+
+Aus diesen Ergebnissen ergaben sich die folgenden beiden Erkenntnisse:
+\begin{itemize}
+\item Auch die Verwendung der Worthäufigkeiten, statt nur das bloße Auftreten eines Wortes zu verwenden, dürfte keine spürbaren Verbesserungen liefern, da Tweets aufgrund der beschränkten Länge Unigrams kaum mehrfach enthalten. 
+\item Das Clustern von Tweets, basierend nur auf den Merkmalen aus dem Tweet-Text, ist nur schwer möglich.
+\end{itemize}
+
+In der Literatur wird meist ein zweistufiger Ansatz vorgeschlagen \cite{TsurLittman, Antenucci}. Zunächst werden die Hashtags gruppiert und diese Ergebnisse zur Tweet-Gruppierung angewendet. Als konkreten Ansatz zur Tweet-Analyse wurde der von Tsur et al. vorgestellte Ansatz \cite{TsurLittman} implementiert. Damit ergab sich als Nebenprodukt auch eine Hashtag-Analyse, die im folgenden Kapitel vorgestellt wird. Das darauffolgende Kapitel beschreibt die Cluster-Analyse basierend auf den Hashtag-Gruppen.
+
+%Erwin
+\subsection{Cluster-Analyse von Hashtags} \label{subsec:ClusterHashtags}
+Während ein einzelner Tweet nur wenige Merkmale auf Grund der beschränkten Länge bietet, lässt sich dieser Flaschenhals bei der Hashtag-Gruppierung beseitigen. 
+Wie in \cite{TsurLittman} beschrieben, werden zu einem bestimmten Hashtag alle Tweets, 
+die diesen ent\-hal\-ten, zur Merkmalserfassung verwendet. Damit ist die Textlänge wesentlich größer als die bei der Merkmalserfassung eines einzelnen Tweets. Die Idee ist also, dass nicht nur mehr Merkmale zur Verfügung stehen, sondern auch, dass durch die größere Textlänge mehr Merkmale einen von Null verschiedenen Wert besitzen. Dadurch sollten sich aussagekräftigere Distanzen ableiten können.
+
+Die einzelnen Schritte lassen sich wie folgt beschreiben:
+\begin{enumerate}
+\item Rufe zu einem Suchbegriff eine bestimmte Menge an Tweets ab. Diese Menge stellt einen Trade-Off zwi\-schen der Genauigkeit und der Laufzeit dar. Eine hohe Anzahl verbessert die Genauigkeit der Ergebnisse, da mit mehr Tweets auch mehr Informationen zur Verfügung stehen. Allerdings führt dies zu einer längeren Wartezeit im Frontend bis zur Anzeige der Ergebnisse.
+%
+\item Erstelle für jeden Hashtag, der in der Tweet-Menge auftritt, ein virtuelles Dokument. Ein virtuelles Dokument zu einem Hashtag ist eine Konkatenation aller Tweet-Texte, die diesen Hashtag enthalten \cite{TsurLittman}. Ein Tweet kann durchaus für mehrere Hashtags verwendet werden. Abbildung \ref{fig:HashtagClusteringSchritt2} zeigt diesen Schritt für das obige Beispiel der drei Tweets.
+%
+\begin{figure}[ht]
+ \centering
+ \includegraphics[scale=0.9]{./Bilder/Clustering/HashtagClusteringIdee.pdf}
+\caption{Erzeugung eines jeweiligen virtuellen Dokuments zu einem Hashtag}
+\label{fig:HashtagClusteringSchritt2}
+\end{figure}
+%
+\item Entferne alle Hashtags, die weniger als $x$ Tweets enthalten. Verschiedene Werte für $x$ wurden ausprobiert und mit $x=15$ gute Ergebnisse erzielt. Dieser Korrekturschritt ist notwendig, damit seltene Hashtags aus der Analyse fallen. Enthält ein Hashtag beispielsweise nur zwei oder drei Tweets, tritt nach wie vor die Problematik der vorherigen Tweet-Analyse auf. Es lassen sich nur wenig aussagekräftige Merkmale ableiten. In Abbildung \ref{fig:HashtagClusteringSchritt2} würde zum Beispiel \glqq \#Rom\grqq{} mit $x=2$ entfernt werden.
+%
+\item Berechne die Merkmale für jeden Hashtag. Anders als bei der Tweet-Analyse, werden nun die Worthäufigkeiten erfasst.
+Während ein Wort bei einem einzelnen Tweet in der Regel nur selten wiederholt wird, kann die Wiederholung bei einem virtuellen Dokument in anderen Größenordnungen auftreten. Daher lohnt es sich hier, als Merkmal die Worthäufigkeit und nicht mehr das bloße Auftreten eines Wortes zu erfassen. Tabelle \ref{fig:ClusterTab3} zeigt die Merkmale für die jeweiligen Hashtags aus dem obigen Beispiel, wobei keine Hashtags entfernt werden.
+%
+%
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{cccccccccccc}
+\toprule
+ & \#CDU & \#SPD  & Merkel & ist & in & London & reist & nach & mag & \#Rom \\ 
+\midrule
+\#CDU & 2 & 2  & 2 & 1 & 1 & 2 & 1 & 1 & 0 & 0\\ 
+
+\#SPD & 2 & 2  & 2 & 1 & 1 & 2 & 1 & 1 & 0 & 0\\ 
+
+\#Rom & 0 & 0  & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 1\\ 
+\bottomrule 
+\end{tabular} 
+\caption{Quantitative Merkmale eines Hashtags: Worthäufigkeiten}
+\label{fig:ClusterTab3}
+\end{table}
+
+%
+%
+\item Dividiere jedes Merkmal eines Hashtags durch die entsprechende Zeilensumme.
+Die Zeilensumme stellt die Gesamtanzahl der Wörter eines Hashtags dar. Durch die Division der Häufigkeit eines Wortes durch die Gesamtanzahl ergibt sich ein relativer Anteil dieses Wortes an der Gesamtzahl der verwendeten Wörter. Im Beispiel ergibt sich somit für das Merkmal \glqq Merkel\grqq{} des Hashtags \glqq \#CDU\grqq{} der Wert $2/12$.
+
+Diese Datenvorbereitung ist notwendig, da jedes virtuelle Dokument aus einer anderen Anzahl an Tweets gebildet wird. Ist zum Beispiel das Wort \glqq kerry\grqq{} in 20 von 40 Wörtern beim Hashtag \glqq \#merkel\grqq{} vorhanden und in 10 von 20 Wörtern beim Hashtag \glqq \#steinmeier\grqq{}, so unterscheiden sich beide Hashtags bei der absoluten Wortanzahl deutlich. Relativ gesehen tritt \glqq kerry\grqq{} aber bei beiden Hashtags in 50\% der Wörter auf. Beide Hashtags sind sich also ähnlicher.
+%
+%
+\item Berechne die Distanzmatrix. Da es sich bei der Wortanzahl um ein quantitatives Merkmal handelt, lassen sich nun andere Distanzmaße verwenden. Hier wurde die euklidische Distanz als Metrik eingesetzt. Weitere Scrum-Iterationen sollten auch die Evaluierung anderer Metriken beinhalten. 
+%
+\item Führe einen Cluster-Algorithmus sowie eine multidimensionale Skalierung durch.
+\end{enumerate}
+Das beschriebene Vorgehen basiert auf \cite{TsurLittman}, ist aber mit Schritt~3~und~5 sowie mit der multidimensionalen Skalierung aus Schritt~7 entsprechend erweitert. 
+
+In der praktischen Anwendung ergaben sich deutlich bessere Ergebnisse als bei der vorherigen Tweet-Analyse, da die Distanzen auf Grund der mehr zur Verfügung stehenden Informationen aussagekräftiger sind. So wurden zum Beispiel \glqq \#merkel\grqq{}, \glqq \#schumacher\grqq{} und \glqq \#ski\grqq{} (Stand: 12.03.2014, \glqq Alle Sprachen\grqq{}) in einem Cluster dicht aneinander dargestellt. Daraus ließ sich zum Beispiel mit dem News-Modul ableiten, dass viele Tweets den Skiunfall von Merkel und Schumacher behandeln. 
+
+Schwierig ist jedoch die Interpretation im Frontend, warum zwei Hashtags in einem Cluster liegen. Künftige Scrum-Iterationen sollten daher im Frontend zum Beispiel eine Möglichkeit bieten, die Tweets zu zwei markierten Hashtags anzuzeigen. Damit lässt sich besser ein Gefühl vermitteln, wie das Ergebnis zustande gekommen ist.
+
+%Um Hashtags gegenseitig nach ihrer Ähnlichkeit zu bewerten, ist es aber auch alternativ möglich, die \glqq Co-Occurence\grqq{} zwi\-schen zwei Hashtags zu zählen \cite{Antenucci}. Zwei Hashtags sind sich umso ähnlicher, je häufiger sie gemeinsam in einem Tweet auftreten.
+%Diese Ähnlichkeitsanalyse ist ebenfalls implementiert worden, wird jedoch aus Laufzeitgründen nicht eingesetzt. 
+
+%Erwin
+\subsection{Verwendung der Hashtag-Cluster zur Tweet-Gruppierung} \label{subsec:ClusterTweetsWithHashtags}
+Sind die Hashtag-Cluster aus einer Menge an Tweets berechnet, lassen sich nun im wei\-te\-ren Schritt die Tweet-Gruppen berechnen.
+Dazu werden die Tweets, die das jeweilige virtuelle Dokument zu einem Hashtag bilden, in den gleichen Cluster eingeordnet wie der entsprechende Hashtag \cite{TsurLittman}. Angenommen, im obigen Beispiel erhält der Hashtag \glqq \#Rom\grqq{} die Cluster-Nummer 2. Alle Tweets, die im virtuellen Dokument von \glqq \#Rom\grqq{} liegen, erhalten somit ebenfalls die Cluster-Nummer 2. 
+
+Ein Problem ist allerdings, dass ein Tweet durchaus in mehreren virtuellen Dokumenten enthalten sein kann, sofern mehrere Hashtags verwendet werden. Besitzen diese unterschiedliche Cluster-Zugehörigkeiten, ist eine 1:1-Zuordnung zwi\-schen Hashtag-Cluster und Tweet-Cluster nicht mehr möglich.
+
+Daher wurde versucht, für jeden Tweet gemäß einer Distanzfunktion den nächsten Hash\-tag zu finden, Der Tweet erbt anschließend die Cluster-Nummer des Hashtags. Damit ist zwar eine eindeutige 1:1-Zuordnung möglich, aber es entsteht erneut das Problem, dass ein Tweet selbst zu wenig Merkmale enthält, um aussagekräftige Distanzen zu den Hashtags abzuleiten. 
+
+Ein wei\-te\-res Problem des Ansatzes ist die Anforderung, 
+Tweets durch die multidimensionale Skalierung in die 2D-Ebene 
+einzubetten. Ein Tweet selbst erhält nur die 
+Cluster-Zugehörigkeit des Hashtags, hat dadurch aber selbst keine Distanzen mehr zu anderen Tweets. 
+Alle Tweets würden daher in einem Punkt dargestellt werden, 
+dem Punkt, an dem theoretisch der Hashtag liegen würde. 
+ Damit lassen sich aber die Distanzen 
+zwi\-schen den Tweets nicht mehr interpretieren. Da dies nicht 
+die ursprüngliche Motivation widerspiegelt, wurde das Ergebnis 
+des hier geschilderten Ansatzes nicht im Frontend dargestellt, 
+ist aber nach wie vor implementiert. 
+
+
+%Wladimir, (Erwin)
+\subsection{Cluster-Algorithmen} \label{subsec:ClusterAlgorithmen}
+
+Bei der Wahl der Cluster-Algorithmen haben wir uns auf hierarchische Clusterverfahren 
+beschränkt, die ohne Koordinaten der einzelnen Punkte auskommen. 
+Der Grund dafür ist, dass man den einzelnen Entitäten, in unserem Fall
+Tweets und Hashtags, zunächst keine Positionen zuordnen kann, d.\,h. die Tweets beziehungsweise Hashtags 
+haben zwar Ähnlichkeiten zu einander, die man als Distanzen interpretieren kann, aber keine festgelegten 
+Positionen in Raum. Es wäre zwar möglich gewesen, zuerst die multidimensionale Skalierung durchzuführen
+und anschließend mit Hilfe der gewonnen Positionen zu clustern, aber es ist sehr unwahrscheinlich,
+dass eine größere Anzahl an Entitäten mit geringen Fehlern in die 2D-Ebene eingebettet werden können.
+Partitionierende Clusteringverfahren, wie $k$-Means \cite{Llo1982} kamen aus diesem Grund nicht in Frage.
+
+Es sind zwei hierarchische Cluster"=Algorithmen implementiert worden, ein Single"=Linkage"=Algorithmus und ein
+Complete"=Linkage"=Algorithmus. 
+Durch die Implementierung beider Algorithmen ist es möglich, die Auswirkungen beider Ansätze auf das Ergebnis zu beobachten. Da Complete Linkage kompaktere
+Cluster erzeugt, haben wir uns für diesen Algorithmus entschieden. Im Folgenden werden die 
+beiden Cluster-Algorithmen einzeln vorgestellt.
+
+%Erwin
+\subsubsection{Single-Linkage-Algorithmus}
+Die Cluster"=Analyse lässt sich auch als Graph-Problem darstellen, wobei die Knoten die zu gruppierenden Objekte darstellen (hier Tweets oder Hashtags). Außerdem handelt es sich um einen vollständigen Graphen, da alle möglichen Objektpaare aus der Distanzmatrix abgebildet werden. Die Kantenkosten sind die jeweiligen Distanzen aus der Distanzmatrix. 
+
+Das Single"=Linkage"=Clustering stellt nun das gleiche Problem 
+dar wie die Berechnung des minimalen Spannbaums (MST) durch 
+den Kruskal-Algorithmus \cite{Kru1956}. Jede hinzugefügte 
+Kante bei der MST-Berechnung stellt einen Fusionierungsschritt 
+beim Clustern dar. Sollen beispielsweise $N$ Cluster berechnet 
+werden, muss bei der Verwendung einer Union-Find-Datenstruktur 
+abgebrochen werden, sobald $N$ Repräsentanten übrig sind.
+
+Der Kruskal"=Algorithmus besitzt eine Laufzeit von $\mathcal{O}(E \log E)$, wobei $E$ die Kantenanzahl darstellt. Da hier ein vollständiger Graph abgearbeitet wird, gilt hier $E = M^2$ mit $M$ als die Anzahl der zu clusternden Entitäten (Knotenanzahl). Durch die Adaption des Kruskal"=Algorithmus besitzt der Single-Linkage-Algorithmus damit eine Laufzeit von $\mathcal{O}(M^2 \log M^2) = \mathcal{O}(M^2 \log M)$.
+
+
+%Wladimir
+\subsubsection{Complete-Linkage-Algorithmus}
+Die Idee bei der Implementierung des Complete"=Linkage"=Algorithmus 
+war, den naiven hierarchischen Algorithmus zu verwenden, 
+an die eigenen Bedürfnisse anzupassen und anschließend die
+Laufzeit zu verbessern.
+
+Sei $S=\left\lbrace t_1, \dots, t_M \right\rbrace$ die Menge der zu clusternden Entitäten, 
+$d:S^2 \rightarrow \mathbb{R}$ eine Distanzfunktion und $N$ die maximale Anzahl der Cluster,
+dann lässt sich der implementierte hierarchische Algorithmus zu Algorithmus \ref{alg:genericHierarchicalAlgorithm}
+zusammenfassen.
+
+\begin{algorithm}
+ \caption{Generischer hierarchischer Algorithmus}\label{alg:genericHierarchicalAlgorithm}
+\begin{algorithmic}[1]
+\Statex \textbf{Eingabe:} Menge der Entitäten $\left\lbrace t_1, \dots, t_M\right\rbrace$, $N$ die maximale Anzahl der Cluster
+\Statex \textbf{Ausgabe:} Menge der Cluster $\mathcal{C}$
+\State $\mathcal{C} = \left\lbrace \left\lbrace t_1 \right\rbrace, \left\lbrace t_2 \right\rbrace, \dots, \left\lbrace t_M \right\rbrace  \right\rbrace$
+\For{$(i = 1; i < M\ \textbf{and}\ |\mathcal{C}| > N ; i++)$}
+\State $(c_i, c_j) = \operatorname*{arg\,min}\limits_{c_i,c_j \in \mathcal{C},\ i \not= j}  d(c_i, c_j)$
+\State $\mathcal{C} = \left( \mathcal{C}\backslash{\left\lbrace c_i,\ c_j \right\rbrace}\right) \cup \left\lbrace c_i \cup c_j \right\rbrace $
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Die Wahl der Funktion $d$ bestimmt das Verhalten des Algorithmus. Wir haben $d$ entsprechend 
+dem Complete-Linkage wie folgt gewählt:
+\begin{align}
+ d(c_i,c_j) := \max{\left\lbrace \delta(t_i,t_j)\ |\ t_i\in c_i, t_j\in c_j \right\rbrace}. \notag
+\end{align}
+Dabei stellt der Ausdruck $\delta(t_i,t_j)$ die aus der Distanzmatrix stammenden Unähnlichkeiten 
+zwi\-schen den Tweets beziehungsweise Hashtags dar.
+
+Bei der naiven Implementierung des obigen Algorithmus beträgt die Laufzeit $\mathcal{O}(M^3)$. Um die Laufzeit auf
+$\mathcal{O}(M^2 \log M)$ zu verbessern, haben wir den Algorithmus so mo\-di\-fi\-ziert, dass zur Verwaltung der
+Unähnlichkeiten ein Heap verwendet wird. Insgesamt müssen durch den Heap $\frac{M^2}{2}-M \in \mathcal{O}(M^2)$ Werte
+verwalten werden. Es werden aber auch maximal $\frac{M^2}{2}-M$ Werte wieder aus dem Heap entfernt, falls $N = 1$ gilt (\textit{worst case}). Insgesamt wird
+also zum Erzeugen und Verwalten des Heaps $\mathcal{O}(M^2 + M^2 \log M^2) = \mathcal{O}(M^2 \log M)$ Zeit
+benötigt, was auch der Laufzeit von dem implementierten Algorithmus entspricht.
+
+%Wladimir
+\subsection{Multidimensionale Skalierung} \label{subsec:MDS}
+Das Ziel der multidimensionalen Skalierung ist es, die gegebenen Objekte im Raum oder in der Ebene anzuordnen. 
+Dabei sollen die Abstände der Objekte zueinander nach der multidimensionalen Skalierung ihre
+Unähnlichkeiten möglichst gut wiedergeben. Dadurch ist es möglich, Objekte, die eigentlich keine Punkte 
+im euklidischen Raum sind, als solche zu interpretieren und so Informationen anschaulicher darzustellen oder
+neue Zusammenhänge zu entdecken. In der Abbildung \ref{img:MDSAutoMarkenBeispiel} ist die Anwendung
+der multidimensionalen Skalierung auf eine Umfrage zu unterschiedlichen Automarken dargestellt. 
+Bei der Umfrage haben die Befragten angegeben, wie ähnlich die betroffenen Automarken zueinander sind. Man kann
+ sehen, dass bei der geeigneten Wahl von Parametern und Verfahren die Punkte in bestimmten Teilen der Ebene
+liegen, die charakteristisch für sie sind, zum Beispiel liegen die Sportwagenhersteller nah bei einander.
+
+\begin{figure}
+ \centering
+ \includegraphics[width=0.8\textwidth]{./Bilder/Clustering/mittlereunaenlichkeitenderautomarken.png}
+\caption{Multidimensionale Skalierung angewandt auf eine Umfrage zu Unterschieden 
+zwi\-schen bekannten Automarken. Bild entnommen aus \cite{Kappelhoff2001}.}\label{img:MDSAutoMarkenBeispiel}
+\end{figure} 
+
+Für unser Projekt haben wir zwei Verfahren zur multidimensionale Skalierung implementiert: \textit{classical scaling} und den Smacof-Algorithmus.
+Beide Verfahren sind in \cite{BorgGroenen2005} ausführlich beschrieben. \textit{Classical scaling} ist ein Verfahren, das 
+analytisch die multidimensionale Skalierung berechnet, wohingegen der Smacof-Algorithmus ein iteratives Verfahren ist
+und wesentlich mehr Parameter bietet. In den folgenden Kapiteln werden die beiden Verfahren kurz vorgestellt. 
+Für eine ausführliche Beschreibung der vorgestellten Verfahren verweisen wir auf \cite{BorgGroenen2005}.
+
+%Wladimir
+\subsubsection{Classical Scaling}
+\textit{Classical scaling} berechnet analytisch zu gegebenen Unähnlichkeiten, die als Distanzen interpretiert werden, eine passende Punktemenge.
+Die Abstände der Punkte untereinander entsprechen den gegeben Distanzen, wenn die Dimension des Raumes, in dem die Punkte liegen,
+hoch genug ist. 
+Der Sinn und Zweck der multidimensionalen Skalierung ist es, die Dimension, in der die Punkte liegen, 
+gering zu halten. Damit lassen sich diese grafisch darstellen, wenn die Dimension kleiner als vier ist.
+Aus diesem Grund können die berechneten Punkte 
+die vorgegebenen Distanzen nur approximieren. Wobei die Approximation schlechter wird, wenn die Anzahl der Dimensionen sinkt.
+
+Sei $\mathbf{\Delta} \in \mathbb{R}^{n\times n}$ die Matrix mit den Distanzen der $n$ Punkte. Ziel ist es eine (von vielen) 
+Punktekonstellation zu finden, die diese Matrix erzeugt und eine Approximation davon in einem niedrigdimensionalen Raum zu nehmen.
+Das Vorgehen bei \textit{classical scaling} lässt sich dann wie folgt zusammenfassen:
+\begin{enumerate}
+ \item Berechne $\mathbf{\Delta}^{(2)}=$ Quadrate der Einträge von $\mathbf{\Delta}$.
+ \item Berechne $-\tfrac{1}{2}\mathbf{C}_n\mathbf{\Delta}^{(2)}\mathbf{C}_n =: \mathbf{XX}^T$, $\mathbf{C}_n=\mathbf{I}_n-\tfrac{1}{n}\mathbf{1}_n$, 
+ $\mathbf{I}_n$ ist die $n$-dimensionale Einheitsmatrix und $\mathbf{1}_n$
+ ist die $n$-dimensionale Matrix mit Einsen.
+ \item Berechne die Eigenwertdekomposition $\mathbf{XX}^T = \mathbf{Q\Lambda Q}^T = \mathbf{Q\Lambda}^{1/2}(\mathbf{Q\Lambda}^{1/2})^T$, 
+ $\mathbf{\Lambda}^{1/2}$ ist Diagonalmatrix mit Quadratwurzeln der Elemente aus $\mathbf{\Lambda}$.
+ \item Berechne für ein gewünschtes $d\in \left\lbrace 1,\ 2,\ 3 \right\rbrace$: 
+ $\mathbf{X}_d= \mathbf{Q}_d\mathbf{\Lambda}^{1/2}_d$, dabei ist
+ $\mathbf{\Lambda}^{1/2}_d$ die Matrix mit den Quadratwurzeln der $d$ größten positiven Eigenwerte und $\mathbf{Q}_d$ ist die Matrix mit 
+ entsprechenden Eigenvektoren.
+\end{enumerate}
+
+Erklärung der Schritte:
+\begin{enumerate}
+ \item Nimmt man an, dass man Punkte hat, die die Distanzen aus der Matrix $\mathbf{\Delta}$ erzeugen und die 
+ Koordinaten dieser Punkte stehen in der Matrix $\mathbf{X}$ (Zeilenweise),
+  dann kann man den quadrierten  euklidische Abstand zweier Vektoren, wie folgt berechnen:
+  \begin{align}
+   d^2_{ij} = \sum_{k=1}^{n}(x_{ik}-x_{jk})^2 = \sum_{k=1}^{n} (x_{ik}^2 -2x_{ik}x_{jk}+x_{jk}^2). \label{eq:qudeukldist}
+  \end{align}
+  Berechnet man die quadrierten  euklidischen Abstände für alle Paare, erhält man die Einträge der Matrix $\mathbf{\Delta}^{(2)}$. Man rechnet
+  mit den quadrierten Abständen, weil man dadurch die Summe aus \eqref{eq:qudeukldist} in mehrere Summen aufteilen kann. Dadurch kann man die 
+  Matrix $\mathbf{\Delta}^{(2)}$ wie folgt schreiben:
+  \begin{align*}
+   \mathbf{\Delta}^{(2)}(\mathbf{X}) = \mathbf{c}\mathbf{1}^T + \mathbf{1}\mathbf{c}^T - 2\mathbf{X}\mathbf{X}^T,
+  \end{align*}
+wobei $\mathbf{c}$ ein Vektor mit den Diagonalelementen aus $\mathbf{X}\mathbf{X}^T$ und $\mathbf{1}\in \mathbb{R}^n$ ist ein Vektor mit Einsen sind.
+Dieser Zusammenhang ist der Grund für die Berechnung von $\mathbf{\Delta}^{(2)}$.
+\item In diesem Schritt wird die Matrix $\mathbf{\Delta}^{(2)}$ beidseitig mit der Matrix $\mathbf{C}_n$ multipliziert ($\mathbf{C}_n$, wie oben in Schritt 2).
+Matrix $\mathbf{C}_n$ ist die Zentrierungsmatrix, d.\,h. eine Anwendung auf einen Vektor bewirkt das Subtrahieren des Mittelwertes seiner Einträge von jedem Eintrag, z.\,B.
+\begin{align*}
+ \mathbf{C}_2 \left( \begin{matrix}
+ 2 \\
+ 4 
+\end{matrix} \right)
+=
+\left( \begin{matrix}
+ \frac{1}{2} & -\frac{1}{2} \\
+ -\frac{1}{2}& \frac{1}{2} 
+\end{matrix} \right) \left( \begin{matrix}
+ 2 \\
+ 4 
+\end{matrix} \right)
+=
+\left(
+\begin{matrix}
+ -1 \\
+ 1 
+\end{matrix}
+\right).
+\end{align*}
+Wichtige Spezialfälle sind: 
+\begin{itemize}
+ \item Zentrierung eines Vektors, der nur Einsen enthält und
+ \item Zentrierung  eines bereits zentrierten Vektors.
+\end{itemize}
+Im ersten Fall erhält man den Nullvektor, weil der Mittelwert eines Vektors nur mit Einsen immer den Wert 1 hat. Im zweiten Fall bewirkt die Zentrierung nichts, da der 
+Vektor bereits zentriert ist. Multipliziert man $\mathbf{\Delta}^{(2)}$ beidseitig mit $\mathbf{C}_n$, ergibt sich:
+\begin{align*}
+ \mathbf{C}_n\mathbf{\Delta}^{(2)}\mathbf{C}_n &= \mathbf{C}_n\left(\mathbf{c}\mathbf{1}^T + \mathbf{1}\mathbf{c}^T - 2\mathbf{X}\mathbf{X^T} \right)\mathbf{C}_n \\
+                                               &= \mathbf{C}_n\mathbf{c}\mathbf{1}^T\mathbf{C}_n + \mathbf{C}_n\mathbf{1}\mathbf{c}^T\mathbf{C}_n - 2\mathbf{C}_n\mathbf{X}\mathbf{X^T}\mathbf{C}_n \\
+                                               &= \mathbf{C}_n\mathbf{c}\mathbf{0}^T + \mathbf{0}\mathbf{c}^T\mathbf{C}_n - 2\mathbf{C}_n\mathbf{X}\mathbf{X^T}\mathbf{C}_n \\
+                                               &=   \underbrace{- 2\mathbf{C}_n\mathbf{X}\mathbf{X^T}\mathbf{C}_n}_{\text{X ist zentriert}} \\
+                                               &= -2 \mathbf{X}\mathbf{X^T}.
+\end{align*}
+Im letzten Schritt der Rechnung nimmt man an, dass die Matrix $\mathbf{X}$ zentriert ist. Das ist keine Einschränkung, weil man eine beliebige Lösung sucht. Außerdem
+lässt sich die Lösung durch eine Translation anpassen, sodass die Distanzen zwischen den Punkten unverändert bleiben.
+
+\item Um aus der Matrix $\mathbf{X}\mathbf{X}^T$ die Matrix $\mathbf{X}$ zu extrahieren, benutzt man die Eigenwertdekomposition. Dabei macht man die Annahme, dass 
+die Eigenwerte nicht negativ sind.
+\item Um eine Approximation von $\mathbf{X}$ für die gewünschte Dimension zu erhalten, benutzt man die größten Eigenwerte und die entsprechenden Eigenvektoren.
+\end{enumerate}
+
+
+Es ist wichtig anzumerken, dass \textit{classical scaling} mit der Hauptkomponentenanalyse
+\cite{jolliffe2002principal} eng verwandt ist. Der Unterschied ist hilfreich für das Verständnis des Vorgehens beim \textit{classical scaling}. Bei
+der Hauptkomponentenanalyse möchte man die Dimension der betrachteten Punkte reduzieren, während es bei \textit{classical scaling} zusätzlich
+darum geht, die Punkte selbst zu finden.
+
+%Wladimir
+\subsubsection{Smacof-Algorithmus}
+Die Idee beim Smacof-Algorithmus ist, eine gewählte Funktion $\sigma_\mathbf{\Delta}:\mathbb{R}^{n\times d} \rightarrow \mathbb{R}$ zu mi\-ni\-mie\-ren. Die
+Funktion $\sigma_\mathbf{\Delta}$ ist dabei ein Maß für den Fehler, der bei der Wahl der $n$ Punkte im $d$-dimensionalen Raum entsteht. Wir haben
+in unserer Implementierung $\sigma_\mathbf{\Delta}$ wie folgt gewählt:
+\begin{align*}
+ \sigma_\mathbf{\Delta}(\mathbf{X}) = \sum_{i=1}^n \sum_{j=i+1}^n (d(\mathbf{x}_i, \mathbf{x}_j) - \delta_{ij})^2.
+\end{align*}
+Dabei ist $\mathbf{x}_i$ die $i$-te Zeile von $\mathbf{X}$, $d(\mathbf{x}_i, \mathbf{x}_j) = \Vert \mathbf{x}_i^T - \mathbf{x}_j^T  \Vert$,
+$\mathbf{\Delta}$ ist die Unähnlichkeitsmatrix (die Einträge an der Position $ij$ geben an, wie unähnlich Entität i zur Entität j ist) und $\delta_{ij}$'s sind die Einträge von $\mathbf{\Delta}$. Die Lösung soll also eine 
+Punktmenge sein, sodass die Summe der Quadrate der Differenzen zwischen den resultierenden Abständen und Unähnlichkeiten minimiert wird.
+
+\begin{figure}[ht]
+   \centering
+   \input{Bilder/Clustering/SmacofInitialisation.tikz}
+   \caption[Initialisierung des Smacof-Algorithmus]{Initialisierung des Smacof Algorithmus.}\label{img:SmacofInitialisierung}
+\end{figure}
+
+Zur Initialisierung haben wir die Punkte entsprechend ihrer Clusterzugehörigkeit im Kreis angeordnet, sodass sie um ihre 
+Clustercentren zufällig verteilt sind, siehe Abbildung \ref{img:SmacofInitialisierung}. Als Alternative kann man die 
+Ausgabe von \textit{classical scaling} verwenden oder man startet mit einer zufälligen Konfiguration. Da in unserem Fall aber eine 
+Clusterzugehörigkeit eine wichtige Rolle spielt, haben wir uns für die erste Variante entschieden.
+
+
+
+
+
+Der implementierte Smacof-Algorithmus ist im Algorithmus \ref{alg:Smacof} zusammengefasst. Der wichtigste
+Schritt in dem Algorithmus ist der Minimierungsschritt in Zeile \ref{lst:line:minStep}. Die Matrix $\mathbf{B}_\mathbf{\Delta}(\mathbf{X})$
+hat dabei folgende Einträge:
+\begin{align*}
+  b_{ij} &= \begin{cases}
+            -\frac{\delta_{ij}}{\Vert \mathbf{x}_i^T - \mathbf{x}_j^T  \Vert}, &\text{falls } i\not=j \text{ und } \Vert \mathbf{x}_i^T - \mathbf{x}_j^T  \Vert \not=0, \\
+            0,                                                             &\text{falls } i\not=j \text{ und } \Vert \mathbf{x}_i^T - \mathbf{x}_j^T  \Vert =0, 
+           \end{cases}\\
+  b_{ii} &= -\sum_{j=1, j\not=i}^n b_{ij}.
+\end{align*}
+
+\begin{algorithm}
+ \caption{Smacof Algorithmus}\label{alg:Smacof}
+\begin{algorithmic}[1]
+\Statex \textbf{Eingabe:} $\mathbf{\Delta}\in \mathbf{R}^{n \times n}$ Unähnlichkeitsmatrix mit den Einträgen $\delta_{ij}$
+\Statex \textbf{Ausgabe:} $\mathbf{X}\in \mathbf{R}^{n \times d}$ Koordinatenmatrix.
+\State $\mathbf{X} =$ Initialpositionen
+\State $\sigma^{\text{pre}} = \infty$
+\State $\sigma^{\text{act}} = \sigma_\mathbf{\Delta}(\mathbf{X})$
+\For{$(i = 0; i < N_\text{max}\ \textbf{and}\ (\sigma^{\text{pre}}-\sigma^{\text{act}}) > \epsilon  ; i++)$}
+\State $\mathbf{X} = \tfrac{1}{n}\mathbf{B}_\mathbf{\Delta}(\mathbf{X})\mathbf{X}$ \label{lst:line:minStep}
+\State $\sigma^{\text{pre}} = \sigma^{\text{act}}$
+\State $\sigma^{\text{act}} = \sigma_\mathbf{\Delta}(\mathbf{X})$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+In jeder Schleifeniteration wird der Fehler $\sigma^{\text{act}}$ kleiner. Der Algorithmus stoppt, wenn die Fehlerdifferenz 
+$(\sigma^{\text{pre}}-\sigma^{\text{act}})$ kleiner ist als eine festgelegt Konstante $\epsilon$ oder die maximale Anzahl
+der Iterationen $N_\text{max}$ erreicht wurde.
+
+
+
+
+%Erwin, Wladimir
+\subsection{Diskussion}
+%
+Die Identifizierung von Tweet-Gruppen, die die selbe Meinung zu einem Thema vertreten, stellte die Motivation der Cluster-Analyse dar. Die zusätzliche Darstellung der Tweets in einer 2D-Ebene sollte die Darstellung dieser Gruppen erleichtern. Distanzen zwi\-schen den Tweets sollten widerspiegeln, wie ähnlich die Meinungen und Themen sind.
+\def\myResScaleW{0.43}
+\def\myResScaleH{0.4}
+\begin{figure}[htb]\begin{scriptsize}
+•
+\end{scriptsize}
+   \centering
+      \subcaptionbox{Clustern von Tweets nach Hashtags\label{img:ErgebnisClusternTweetsNachHashtags}}{
+      \resizebox{\myResScaleW\textwidth}{\myResScaleH\textwidth}{\input{Bilder/Clustering/ClusteringNachAllenHashtags.tikz}}} \quad
+      \subcaptionbox{Clustern von Tweets nach Wörtern\label{img:ErgebnisClusternTweetsNachWoertern}}{
+      \resizebox{\myResScaleW\textwidth}{\myResScaleH\textwidth}{\input{Bilder/Clustering/ClusteringNachAllenWoertern.tikz}}} \\
+      \subcaptionbox{Clustern von Hashtags\label{img:ErgebnisClusternVonHashtags}}{
+      \resizebox{\myResScaleW\textwidth}{\myResScaleH\textwidth}{\input{Bilder/Clustering/ClusteringNachHashtags.tikz}}}
+   \caption{Ergebnisse der Clusteranalyse}\label{img:Ergebnisse}
+\end{figure}
+
+Während der Implementierung zeigte sich, dass die beschränkte Länge eines Tweets das größte Problem darstellt. Es lassen sich zu wenig aussagekräftige Merkmale aus einem einzelnen Tweet extrahieren. Bei der Verwendung von Hashtags zur Cluster-Analyse von Tweets sind die Distanzen zwi\-schen den Tweets nicht gleichmäßig verteilt. Wenn sich zwei Tweets um einen Hashtag unterscheiden, entstehen entsprechende Sprünge in den Ähnlichkeiten. Die Anzahl der Hashtags ist viel kleiner als die Anzahl der
+Tweets (oft max. 100 Hashtags vorhanden), dadurch sind die Sprünge deutlich zu sehen. Abbildung \ref{img:ErgebnisClusternTweetsNachHashtags} zeigt das entsprechende Resultat.
+
+Mit der Verwendung der Unigrams der Tweets werden zwar alle Wörter zur Analyse herangezogen und es stehen mehr Merkmale zur Ähnlichkeitsanalyse zur Verfügung, jedoch stimmen zwi\-schen zwei Tweets meist nur wenige Merkmale überein. Wie Abbildung \ref{img:ErgebnisClusternTweetsNachWoertern} zeigt, sind die Tweets feiner verteilt. Allerdings lassen sich nach wie vor keine sinnvollen Ähnlichkeiten zwi\-schen zwei Tweets berechnen. Die ideale Situation, in der dieser Ansatz funktioniert, stellen Retweets dar. Diese liegen in einem Cluster dicht aneinander, da alle Unigrams übereinstimmen (mit einem roten Kreis in der Abbildung \ref{img:ErgebnisClusternTweetsNachWoertern} markiert). Da dieses Verfahren feinere Distanzen zwi\-schen den Tweet-Gruppen liefert, stellt das Frontend die Cluster-Ergebnisse durch die Unigram-Merkmale dar.
+
+
+Diese Ergebnisse motivierten einen zweistufigen Ansatz, welchen Tsur et al. in \cite{TsurLittman} vorstellen. Zunächst erfolgt die Identifizierung von Hashtag-Gruppen. 
+Bei der Merkmals\-erfassung eines Hashtags werden alle Tweets verwendet, die diesen Hashtag enthalten. 
+Aufgrund der größeren Textlänge lohnt es sich nun, die Häufigkeit eines jeden Wortes als Merkmal zu erfassen. 
+Damit sind die Distanzen aussagekräftiger. Anschließend erhält ein jeweiliger Tweet die Hashtag-Gruppe, zu der er am 
+ähnlichsten ist. Damit besitzen aber die Tweets selbst keine Distanzen zueinander, womit auch die ursprüngliche 
+Motivation verletzt ist, dass die Distanzen in der 2D-Projektion die thematische Ähnlichkeit widerspiegeln.
+Daher stellt das Frontend diesen Ansatz zunächst nicht dar.
+
+Da allerdings die Hashtag-Cluster sehr viel aussagekräftiger sind, wurde dieser Ansatz mit in das Frontend 
+als eigenständiges Verfahren zusätzlich zur Tweet-Gruppierung übernommen. Hiermit lassen sich thematisch 
+zusammengehörige Hashtags identifizieren. Je näher zwei Hashtags in der 2D-Projektion liegen, desto ähnlicher 
+sind sich auch die Tweets, die diese Hashtags enthalten. Abbildung \ref{img:ErgebnisClusternVonHashtags} 
+zeigt ein Ergebnis der Hashtag-Gruppierung.
+
+Während also die Hashtag-Gruppierung funktioniert, sind für die Tweet-Gruppierung neue Ansätze notwendig. Zum einen wären String-Matching-Algorithmen, genauer Verfahren zum \glqq \textit{approximate string matching}\grqq{}, möglich, sodass mehr Merkmale zwi\-schen den Tweets übereinstimmen. Damit könnten Unigrams auch trotz einer leicht unterschiedlichen Zeichenfolge übereinstimmen, wie zum Beispiel bei \glqq \#merkel\grqq{} und \glqq \#merkels\grqq{}. 
+Zum anderen kann versucht werden, beim zweistufigen Ansatz aussagekräftigere Distanzen auch für die Tweets abzuleiten. Beispielsweise könnte separat eine Distanzberechnung für alle Tweets in einem Hashtag-Cluster erfolgen. Hier könnten mehr Merkmale zwi\-schen zwei einzelnen Tweets übereinstimmen, da die Tweets thematisch vorselektiert sind. Damit geben die Hashtag-Cluster global die Distanzen zwi\-schen den Themen an. Die lokalen Distanzen innerhalb eines Clusters geben die Ähnlichkeit zwi\-schen den Tweets wider.
+%
+% Ausblick: Wörter clustern und Co-Occurence, so diese Wolke besser machen?
+ %   Tag-Cloud ...e

@@ -1,0 +1,50 @@
+# This file belongs in your home directory under the name "regression.properties"!
+
+# Sleep time between regression model updates
+# -------------------------------------------
+# This value must be longer than it takes to update all tweets in the database for one language
+# Default value for production use: 86400 (one day)
+# sleep.time = 86400
+sleep.time = 600
+
+# Minimum number of labeled tweets required in database to build a new regression model
+# -------------------------------------------
+# Default value for production use: 100 (models with fewer tweets make useless estimates)
+# new.model.minimum = 100
+new.model.minimum = 1
+
+# Minimum number of new labeled tweets required in database to update an existing regression model
+# -------------------------------------------
+# Default value for production use: 1 (more data means better estimates)
+# update.model.minimum = 1
+update.model.minimum = 1
+
+# Determines if bigrams will be used to build the sentiment model
+# -------------------------------------------
+# Default value for production use: True (we want to include all kinds of ngrams)
+# update.model.use_bigrams = True
+update.model.use_bigrams = True
+
+# Determines if trigrams will be used to build the sentiment model
+# -------------------------------------------
+# Default value for production use: True (we want to include all kinds of ngrams)
+# update.model.use_trigrams = True
+update.model.use_trigrams = True
+
+# Determines if fourgrams will be used to build the sentiment model
+# -------------------------------------------
+# Default value for production use: True (we want to include all kinds of ngrams)
+# update.model.use_fourgrams = True
+update.model.use_fourgrams = True
+
+# Border between negative (includes border) and neutral (excludes border) sentiment
+# -------------------------------------------
+# Default value for production use: -0.33f (all three categories should have equal size of 2/3)
+# rest.sentiment.lower_border = -0.33f
+rest.sentiment.lower_border = -0.33f
+
+# Border between positive (includes border) and neutral (excludes border) sentiment
+# -------------------------------------------
+# Default value for production use: 0.33f (all three categories should have equal size of 2/3)
+# rest.sentiment.upper_border = 0.33f
+rest.sentiment.upper_border = 0.33f

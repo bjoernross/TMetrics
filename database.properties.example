@@ -1,0 +1,5 @@
+javabase.jdbc.url = jdbc:mysql://localhost/
+javabase.jdbc.driver = com.mysql.jdbc.Driver
+javabase.jdbc.username = datamining
+javabase.jdbc.password = 968ik57zu4jetwqrgwhtr
+database.name=datamining

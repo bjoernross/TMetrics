@@ -1,0 +1,53 @@
+\begin{frame}{Erste Überlegungen}
+
+bootstrap(frontend)
+\end{frame}
+
+
+\begin{frame}{Java}
+	\begin{itemize}
+	\item Alle im Team hatten Erfahrungen mit Java
+	\item Es gibt Bibliotheken zur Nutzung von Twitter in Java $\Rightarrow$ Daemon nutzt Java
+	\item Man kann mit Java Dynamische Webseiten erstellen wenn man Tomcat nutzt $\Rightarrow$ Rest nutzt Java
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Datenbank oder Dateibasiert}
+	\begin{itemize}
+		\item Daten(Tweets) müssen gespeichert werden: Dateien oder Datenbank?
+		\item relationale Datenbank erlaubt speichern und erstellen Individueller Abfragen
+		\item MySQL die Datenbank mit der die meisten Leute Erfahrung haben
+		\item Genutzt wurde MySQL mit InnoDB 
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Datenbank: Anwendung}
+	\begin{itemize}
+	\item Ursprüngliches Schema wurde Anhand der Twitter-API erstellt(To-Do: Bild vom Schema einfügen)
+	\item Schema versucht alle Relationen von Twitter abzubilden und alle für uns relevanten Informationen zu liefern
+	\item Kleine Änderungen behoben Probleme mit Umlauten, zu kurzen Spalten, ergänzen Sentiment und ähnliches
+	\item Problem: Performance sinkt extrem sobald Datenbestand gewisse Größe erreicht
+	\item Quick'n'Dirty Lösung am Ende der Programmierzeit: teilweise de-normalisierung der DB / optimieren von Querys
+	\item Besser: Überarbeiten des gesamten Schemas
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Datenbank: Erfahrungen}
+	\begin{itemize}
+		\item Gutes Schema ist wichtig für Performance
+		\item Indizes sollten zusammen mit dem Schema erarbeitet werden
+		\item Gute Querys sind ebenfalls sehr wichtig, sie haben einen großen Einfluss auf die Performance
+		\item Connections offen halten, Prepared Statements und Batch Inserts bringen große Performance Schübe
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Datenbank: Ausblick}
+	\begin{itemize}
+	\item Haben nur mit MySQL gearbeitet. Niemand im Team hatte größere Erfahrung mit Datenbanken.
+	\item Andere relationale oder auch NoSQL Datenbank wäre vielleicht besser geeignet gewesen.
+	\item Möglichst Früh mit Vor-/Nachteilen der Datenbanken beschäftigen um passende Auszuwählen: Dazu müssen aber Anwendungen/Abfragen feststehen
+	\end{itemize}
+\end{frame}
+
+

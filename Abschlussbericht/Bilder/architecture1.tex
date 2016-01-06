@@ -1,0 +1,40 @@
+
+\begin{tikzpicture}[scale=.6,database/.style={
+      cylinder,
+      cylinder uses custom fill,
+      cylinder body fill=lblue,
+      cylinder end fill=lblue,
+      shape border rotate=90,
+      aspect=0.25,
+      align=center,
+      draw
+    }]
+    
+
+\definecolor{silver}{RGB}{158,158,169}
+\definecolor{midgray}{rgb}{.35,.35,.35}
+\definecolor{lightsilver}{RGB}{221,221,232}
+\definecolor{lblue}{RGB}{210,220,250}
+\definecolor{mblue}{RGB}{165,190,225}
+\definecolor{dblue}{RGB}{0,70,117}
+\definecolor{lgreen}{RGB}{200,245,185}
+\definecolor{mgreen}{RGB}{190,225,165}
+\definecolor{mred}{RGB}{225,190,165}
+\definecolor{dgreen}{RGB}{40,135,40}
+\definecolor{dred}{RGB}{135,40,40}
+
+\draw[-,dashed,semithick,midgray] (8.5,-7.75) -- (-4,-7.75);
+\draw[-,dashed,semithick,midgray] (8.5,3) -- (8.5,-7.75) -- (11.5,-10.75);
+\node[draw=none,silver] at (6.75,-6.75) {\underline{TMetrics}};
+\node[draw=none,silver] at (10.65,-6.75) {\underline{Data Origin}};
+\node[draw=none,silver] at (6.75,-8.75) {\underline{User}};
+
+\node[fill=mred,draw=black,font=\small, minimum height=1cm, minimum width= 2.5cm] (fe) at (0, -10.5) {{JS Frontend}};
+\node[ellipse,fill=mblue,draw=black,font=\small, minimum height=1cm, minimum width= 2.5cm] (tw) at (13, 0) {Twitter};
+
+\node[fill=lblue,draw=black,minimum width=2.5cm, minimum height=1.5cm, font=\small] (tm) at (0,0) {TMetrics};
+\draw[->,semithick,>=stealth',shorten >=1pt] (tw) -- (tm);
+\draw[->,semithick,>=stealth',shorten >=1pt] (tm) -- (fe);
+
+
+\end{tikzpicture}

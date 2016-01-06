@@ -1,0 +1,18 @@
+/build
+
+# Properties files to hold users' OWN authentication information
+*.properties
+
+# Eclipse stuff
+.classpath
+.project
+.settings/
+
+# Log file
+Daemon.log
+
+# Compiled files
+target/
+
+# Regression models
+*.ser

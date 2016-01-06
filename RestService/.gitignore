@@ -1,0 +1,12 @@
+/build
+
+# Eclipse shit
+.classpath
+.project
+.settings/
+
+# Compiled file
+target/
+
+# Local Dump to avoid being overwritten during commits
+src/test/resources/LocalDump.sql

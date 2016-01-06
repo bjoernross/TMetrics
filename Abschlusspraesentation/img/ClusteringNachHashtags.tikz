@@ -1,0 +1,89 @@
+\def\maxW{0.45}
+\begin{tikzpicture}[y=\textwidth/0.8,x=\textwidth/\maxW, background rectangle/.style={draw=black, thick, fill=yellow!10,},show background rectangle]
+\def\marRad{0.5mm}
+\definecolor{color0}{rgb}{0.78,0.09,0.11}
+\definecolor{color1}{rgb}{0.10,1.00,0.52}
+\definecolor{color2}{rgb}{0.09,0.32,0.64}
+\definecolor{color3}{rgb}{0.70,0.69,0.42}
+\definecolor{color4}{rgb}{0.36,0.70,0.25}
+\definecolor{color5}{rgb}{0.91,0.04,0.56}
+\definecolor{color6}{rgb}{0.9,0.33,0.65}
+\definecolor{color7}{rgb}{0.56,0.22,0.62}
+\definecolor{color8}{rgb}{0.45,0.68,0.87}
+\definecolor{color9}{rgb}{0.03,0.89,0.67}
+\definecolor{color10}{rgb}{0.02,0.99,0.02}
+\definecolor{color11}{rgb}{0.03,0.49,0.99}
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.02, -0.00)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.02, -0.01)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.05, -0.01)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.04, -0.05)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.06, -0.06)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.03, -0.09)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.02, -0.04)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.02, -0.03)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.06, -0.05)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.08, -0.05)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.07, -0.08)};
+\path[fill=color8,draw=color8,mark size=\marRad, mark=square*] plot coordinates {(-0.00, -0.06)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.02, 0.02)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.03, -0.01)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.04, -0.02)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.02, 0.00)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.08, -0.02)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.02, -0.01)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.06, -0.03)};
+\path[fill=color0,draw=color0,mark size=\marRad, mark=*] plot coordinates {(0.05, -0.04)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(0.02, -0.04)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.05, 0.03)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.02, 0.04)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.07, 0.07)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.10, 0.04)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.10, 0.06)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.10, 0.03)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.08, 0.07)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.11, 0.10)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.10, 0.01)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.07, 0.05)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.06, 0.01)};
+\path[fill=color4,draw=color4,mark size=\marRad, mark=diamond*] plot coordinates {(-0.11, 0.05)};
+\path[fill=color1,draw=color1,mark size=\marRad, mark=square*] plot coordinates {(0.08, -0.00)};
+\path[fill=color1,draw=color1,mark size=\marRad, mark=square*] plot coordinates {(0.12, -0.03)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.14, 0.11)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.12, 0.13)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.12, 0.13)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.10, 0.14)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.11, 0.14)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.09, 0.11)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.09, 0.15)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.14, 0.13)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.11, 0.15)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.15, 0.12)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.13, 0.14)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.08, 0.17)};
+\path[fill=color2,draw=color2,mark size=\marRad, mark=triangle*] plot coordinates {(0.13, 0.14)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.05, 0.12)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.02, 0.07)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.03, 0.07)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.06, 0.10)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.04, 0.07)};
+\path[fill=color3,draw=color3,mark size=\marRad, mark=heart] plot coordinates {(-0.07, 0.11)};
+\path[fill=color5,draw=color5,mark size=\marRad, mark=pentagon*] plot coordinates {(-0.13, -0.00)};
+\path[fill=color5,draw=color5,mark size=\marRad, mark=pentagon*] plot coordinates {(-0.17, 0.05)};
+\path[fill=color6,draw=color6,mark size=\marRad, mark=heart] plot coordinates {(-0.22, -0.05)};
+\path[fill=color6,draw=color6,mark size=\marRad, mark=heart] plot coordinates {(-0.21, -0.02)};
+\path[fill=color7,draw=color7,mark size=\marRad, mark=*] plot coordinates {(-0.11, -0.05)};
+\path[fill=color7,draw=color7,mark size=\marRad, mark=*] plot coordinates {(-0.10, -0.03)};
+\path[fill=color7,draw=color7,mark size=\marRad, mark=*] plot coordinates {(-0.13, -0.10)};
+\path[fill=color7,draw=color7,mark size=\marRad, mark=*] plot coordinates {(-0.12, -0.07)};
+\path[fill=color9,draw=color9,mark size=\marRad, mark=triangle*] plot coordinates {(-0.03, -0.11)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.19)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.20)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.07, -0.17)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.18)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.19)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.20)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.07, -0.20)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.20)};
+\path[fill=color10,draw=color10,mark size=\marRad, mark=heart] plot coordinates {(0.08, -0.20)};
+\path[fill=color11,draw=color11,mark size=\marRad, mark=diamond*] plot coordinates {(0.20, -0.06)};
+\end{tikzpicture}

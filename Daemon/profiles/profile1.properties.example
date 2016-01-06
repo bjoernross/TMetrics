@@ -1,0 +1,7 @@
+# Twitter properties for datamining minion
+profile.screenName=abc
+profile.name=abc
+oauth.consumerKey=123
+oauth.consumerSecret=123
+oauth.accessToken=123
+oauth.accessTokenSecret=123

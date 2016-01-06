@@ -1,0 +1,57 @@
+\section{Code-Organisation}
+Wie im vorherigen Kapitel beschrieben verlässt sich unser Projekt an vielen Stellen %TODO: echt? Wo wurde das denn vorher beschrieben?
+auf externe Bibliotheken. Um einen reibungslosen Entwicklungsablauf innerhalb des Teams 
+zu erreichen, muss eine Methode bereitgestellt werden, welche die Verwaltung dieser 
+externen Bibliotheken übernimmt. Diese Aufgabe wird für Java-Projekte von dem 
+Programm Maven der Apache Foundation übernommen. 
+%TODO Quelle
+
+Bei diesem Programm handelt es sich um ein plattformunabhängiges Build-Management-Tool 
+für Java-Projekte, das die Entwickler beim Anlegen, Kompilieren, Testen und 
+Verteilen des Projekts unterstützt. Ein Großteil dieser Schritte soll automatisiert 
+erledigt werden. Die Konfiguration all dieser Funktionen wird in einer XML Datei 
+(\texttt{pom.xml}) festgehalten. An dieser Stelle lassen sich auch alle Abhängigkeiten zu 
+externen Bibliotheken eintragen. Diese werden bei dem Kompilier-Befehl aus einem 
+zentralen Repository in die Entwicklungsumgebung geladen, sowie alle Build-Path-Parameter entsprechend für das Projekt gesetzt. Dies erlaubt es, externe Bibliotheken 
+in sehr einfacher Art und Weise in ein Projekt einzubinden, ohne einen komplizierten 
+Importierungsprozess für den einzelnen Entwickler zu erfordern.
+
+In dieser XML-Datei können ebenfalls die Optionen für die Tests des Projekts gesetzt 
+werden. Über ein Plugin für verschiedene Entwicklungsumgebungen (Eclipse, IntelliJ) 
+können die Konfigurationsdateien für diese Programme sehr einfach erstellt werden. 
+Über Plugins der Entwicklungsumgebungen ist es allerdings auch möglich, Maven-Projekte 
+in die Programme zu importieren. 
+
+In den ersten Wochen unseres Projektseminars wurden die beiden Komponenten Daemon und 
+REST-Service als zwei separate Maven-Projekte angesehen. Erst als die 
+Regressionsmodelle eine Verbindung zwischen den beiden notwendig gemacht haben, musste 
+die Konfiguration umgestellt werden. Ein erster Versuch sah vor, das Daemon-Projekt lokal in das Maven-Repository zu installieren und es dann als direkte Abhängigkeit in das REST-Service-Projekt mit aufzunehmen. Diese Herangehensweise erwies sich aber als nicht praktikabel, da beim Kompilieren des REST-Service-Projekts der Code für die Daemon-Klassen nur dann neu aus dem Repository geladen wurde, wenn es sich um eine neue Version des Projekts handelte. Eine neue Versionsnummer für das Projekt musste allerdings vor jedem Kompilieren per Hand gesetzt werden. Aus diesem Grund wurde dieser Ansatz verworfen. Eine Lösung für dieses Problem konnte mit dem Modul-Plugin für Maven erreicht werden. Hierbei werden mehrere Maven-Projekte als einzelne Module unter einem übergeordneten Projekt zusammengefasst. Der essentielle Punkt ist hierbei, dass ein Unterprojekt von einem anderen abhängig sein darf. Diese Konfiguration erlaubte es, die beiden Projekte nacheinander zu kompilieren und den REST-Service abhängig vom Daemon zu machen. Somit sind die Klassen des Daemon-Projekts auch im REST-Service nutzbar. Dies bedeutet ebenfalls, dass für einen 
+Kompilierungsvorgang des gesamten Projekts sowohl die Tests im Daemon- als auch im 
+REST-Service-Modul durchlaufen werden müssen. Um diese Tests unabhängig vom 
+Entwicklungssystem bzw. unabhängig von dem gerade verwendeten Computer durchführen zu 
+können, mussten einige Vorkehrungen getroffen werden.
+
+\section{Tests}
+Wie vorher erwähnt, ist eine Komponente der Softwareentwicklung, die über Maven 
+automatisiert abläuft, das Testen. Bei dem Kompilierungsvorgang führt Maven ebenfalls 
+alle Tests aus, die sich in einem vorher definierten Unterordner des Projekts 
+befinden. Maven arbeitet hier nahtlos mit JUnit zusammen, um alle Tests in der 
+entsprechenden Konfiguration durchzuführen.
+
+Für den REST-Service waren vor allem die Integrationstests von essentieller 
+Wichtigkeit. Hier wurden die verschiedenen Anfragen getestet, welche die Ergebnisse and 
+das Frontend weiterreichen sollten. Um eine unabhängige Testumgebung zu erreichen, 
+wurde hier eine explizite Testdatenbank eingerichtet, die vor allen Tests einmal 
+aufgebaut wird. Hierzu wurde eine Datenbank per Hand bearbeitet und in eine Datei 
+exportiert, die alle SQL-Anweisungen beinhaltet, um die Datenbank neu zu erstellen. 
+Diese Datei konnte als Ressource in das Projekt eingebunden werden und ebenfalls zur 
+Versionskontrolle hinzugefügt werden. Diese Dump-Datei musste noch für die lokale 
+Datenbank angepasst werden. Der Name der Datenbank, der sich in der Dump-Datei 
+befindet musste durch den in der \texttt{database.properties}-Datei ersetzt werden. Diese 
+Vorkehrungen ermöglichten es, in den darauffolgenden Tests von einer sehr spezifischen 
+Datenbank ausgehen zu können und somit komfortabel Tests zu erwarteten und 
+unerwarteten Eingaben durchzuführen. Neben den Integrationstests wurden auch viele 
+Methoden, die Datenbankabfragen weiterverarbeiten, mit Unit-Tests getestet. Auch hier 
+wurden Randbedingungen, wie zum Beispiel leere Arrays, mit überprüft. Weitere Informationen zu den Besonderheiten des REST-Service sind im Infrastruktur-Kapitel bzw. in den Kapiteln der einzelnen Module zu finden.
+
+Die Tests im Daemon, die eine externe Datenbank voraussetzen, wurden ebenfalls mit einer extra Datenbank realisiert. Es wurde erneut eine Datenbank per Hand erstellt und ein Dump erzeugt, der in die Versionierung mit aufgenommen wurde. Bei den Integrationstests wurde hauptsächlich getestet, ob von Twitter abgefragte Informationen korrekt in die Datenbank übertragen wurden. Da ein Teil der Sentimentanalyse auch im Daemon stattfindet, müssen die Unit-Tests für diese ebenfalls im Daemon Projekt abgehandelt werden. Eine weitere Komponente des Daemons, die ausgiebig getestet wurde, ist das Multithreading. Mehr Details zu der Funktionsweise des Multithreading und den Testfällen sind im Hauptkapitel des Daemons zu finden.

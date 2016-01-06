@@ -1,0 +1,10 @@
+Notizen zum Konzept der Webseite
+
+ - Eine einheitliche Suchmaske für:
+   - Suche einzelner Begriffe aus der Datenbank
+   - Suche neue Begriffe (Anstoß für den Daemon)
+   - Suche eines Begriffs zum vergleichen (nur möglich, wenn zuvor bereits gesucht wurde) 
+ - Boxen für Meta-Daten zu den Suchen der einzelnen Begriffe. Boxen sind einzeln schließbar.
+ - modularer Aufbau der eigentlichen Inhalte (Output des Servers) als Boxen untereinander
+ 
+ grober Aufbau siehe concept.jpg
